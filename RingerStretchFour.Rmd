@@ -1,0 +1,220 @@
+---
+title: "Are power forwards and centers adapting to Small Ball?"
+author: "Derek Corcoran"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    fig_caption: yes
+---
+
+It is no secret that in the last few years the media, basketball players, and ex-basketball players have been talking about small ball revolution. As we can see bellow search interest (If we don't take into account a moment in 2006) has been going up consistently.
+
+Most of times, the small ball line-ups tend to slide a small froward to the power froward position (think Kevin Durant in OKC or Lebron James in Cleveland), or slide a Power Froward to the Center Position (A la Draymond Green in GSW). 
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE}
+library(ggthemr)
+library(gtrendsR)
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE, fig.cap="Search of Small ball According to Google Trends"}
+gconnect("derek.corcoran.barrios@gmail.com", "duo5241K+") 
+lang_trend <- gtrends(c("small ball"))
+trend <- lang_trend$trend
+plot(lang_trend)
+```
+
+We keep hearing how NBA players say the will add the three point shot to their repertoir during the off-season, if that was the case we could start seeing more three point shooting power frowards like Dirk or Kevin love in pace and space line-ups that don't sacrifice defensive rebounding, height or rim protection, but are Power Frowards adapting to their new reality? We will analize the data of three point shooting from season 97-98 to now to see the answer.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+library(SportsAnalytics)
+NBA15_16 <- fetch_NBAPlayerStatistics(season = "15-16", what = c("", ".Home", ".Away"))
+NBA15_16$Three_pct <- NBA15_16$ThreesMade/NBA15_16$ThreesAttempted
+NBA15_16$Year <- 2016
+NBA15_16$Mean3p <- mean(NBA15_16$Three_pct, na.rm= TRUE)
+NBA15_16$Avobe_Av <- NBA15_16$Three_pct > NBA15_16$Mean3p
+
+NBA14_15 <- fetch_NBAPlayerStatistics(season = "14-15", what = c("", ".Home", ".Away"))
+NBA14_15$Three_pct <- NBA14_15$ThreesMade/NBA14_15$ThreesAttempted
+NBA14_15$Year <- 2015
+NBA14_15$Mean3p <- mean(NBA14_15$Three_pct, na.rm= TRUE)
+NBA14_15$Avobe_Av <- NBA14_15$Three_pct > NBA14_15$Mean3p
+
+NBA13_14 <- fetch_NBAPlayerStatistics(season = "13-14", what = c("", ".Home", ".Away"))
+NBA13_14$Three_pct <- NBA13_14$ThreesMade/NBA13_14$ThreesAttempted
+NBA13_14$Year <- 2014
+NBA13_14$Mean3p <- mean(NBA13_14$Three_pct, na.rm= TRUE)
+NBA13_14$Avobe_Av <- NBA13_14$Three_pct > NBA13_14$Mean3p
+
+NBA12_13 <- fetch_NBAPlayerStatistics(season = "12-13", what = c("", ".Home", ".Away"))
+NBA12_13$Three_pct <- NBA12_13$ThreesMade/NBA12_13$ThreesAttempted
+NBA12_13$Year <- 2013
+NBA12_13$Mean3p <- mean(NBA12_13$Three_pct, na.rm= TRUE)
+NBA12_13$Avobe_Av <- NBA12_13$Three_pct > NBA12_13$Mean3p
+
+NBA11_12 <- fetch_NBAPlayerStatistics(season = "11-12", what = c("", ".Home", ".Away"))
+NBA11_12$Three_pct <- NBA11_12$ThreesMade/NBA11_12$ThreesAttempted
+NBA11_12$Year <- 2012
+NBA11_12$Mean3p <- mean(NBA11_12$Three_pct, na.rm= TRUE)
+NBA11_12$Avobe_Av <- NBA11_12$Three_pct > NBA11_12$Mean3p
+
+NBA10_11 <- fetch_NBAPlayerStatistics(season = "10-11", what = c("", ".Home", ".Away"))
+NBA10_11$Three_pct <- NBA10_11$ThreesMade/NBA10_11$ThreesAttempted
+NBA10_11$Year <- 2011
+NBA10_11$Mean3p <- mean(NBA10_11$Three_pct, na.rm= TRUE)
+NBA10_11$Avobe_Av <- NBA10_11$Three_pct > NBA10_11$Mean3p
+
+NBA09_10 <- fetch_NBAPlayerStatistics(season = "09-10", what = c("", ".Home", ".Away"))
+NBA09_10$Three_pct <- NBA09_10$ThreesMade/NBA09_10$ThreesAttempted
+NBA09_10$Year <- 2010
+NBA09_10$Mean3p <- mean(NBA09_10$Three_pct, na.rm= TRUE)
+NBA09_10$Avobe_Av <- NBA09_10$Three_pct > NBA09_10$Mean3p
+
+NBA08_09 <- fetch_NBAPlayerStatistics(season = "08-09", what = c("", ".Home", ".Away"))
+NBA08_09$Three_pct <- NBA08_09$ThreesMade/NBA08_09$ThreesAttempted
+NBA08_09$Year <- 2009
+NBA08_09$Mean3p <- mean(NBA08_09$Three_pct, na.rm= TRUE)
+NBA08_09$Avobe_Av <- NBA08_09$Three_pct > NBA08_09$Mean3p
+
+NBA07_08 <- fetch_NBAPlayerStatistics(season = "07-08", what = c("", ".Home", ".Away"))
+NBA07_08$Three_pct <- NBA07_08$ThreesMade/NBA07_08$ThreesAttempted
+NBA07_08$Year <- 2008
+NBA07_08$Mean3p <- mean(NBA07_08$Three_pct, na.rm= TRUE)
+NBA07_08$Avobe_Av <- NBA07_08$Three_pct > NBA07_08$Mean3p
+
+NBA06_07 <- fetch_NBAPlayerStatistics(season = "06-07", what = c("", ".Home", ".Away"))
+NBA06_07$Three_pct <- NBA06_07$ThreesMade/NBA06_07$ThreesAttempted
+NBA06_07$Year <- 2007
+NBA06_07$Mean3p <- mean(NBA06_07$Three_pct, na.rm= TRUE)
+NBA06_07$Avobe_Av <- NBA06_07$Three_pct > NBA06_07$Mean3p
+
+NBA05_06 <- fetch_NBAPlayerStatistics(season = "05-06", what = c("", ".Home", ".Away"))
+NBA05_06$Three_pct <- NBA05_06$ThreesMade/NBA05_06$ThreesAttempted
+NBA05_06$Year <- 2006
+NBA05_06$Mean3p <- mean(NBA05_06$Three_pct, na.rm= TRUE)
+NBA05_06$Avobe_Av <- NBA05_06$Three_pct > NBA05_06$Mean3p
+
+NBA04_05 <- fetch_NBAPlayerStatistics(season = "04-05", what = c("", ".Home", ".Away"))
+NBA04_05$Three_pct <- NBA04_05$ThreesMade/NBA04_05$ThreesAttempted
+NBA04_05$Year <- 2005
+NBA04_05$Mean3p <- mean(NBA04_05$Three_pct, na.rm= TRUE)
+NBA04_05$Avobe_Av <- NBA04_05$Three_pct > NBA04_05$Mean3p
+
+NBA03_04 <- fetch_NBAPlayerStatistics(season = "03-04", what = c("", ".Home", ".Away"))
+NBA03_04$Three_pct <- NBA03_04$ThreesMade/NBA03_04$ThreesAttempted
+NBA03_04$Year <- 2004
+NBA03_04$Mean3p <- mean(NBA03_04$Three_pct, na.rm= TRUE)
+NBA03_04$Avobe_Av <- NBA03_04$Three_pct > NBA03_04$Mean3p
+
+NBA02_03 <- fetch_NBAPlayerStatistics(season = "02-03", what = c("", ".Home", ".Away"))
+NBA02_03$Three_pct <- NBA02_03$ThreesMade/NBA02_03$ThreesAttempted
+NBA02_03$Year <- 2003
+NBA02_03$Mean3p <- mean(NBA02_03$Three_pct, na.rm= TRUE)
+NBA02_03$Avobe_Av <- NBA02_03$Three_pct > NBA02_03$Mean3p
+
+NBA01_02 <- fetch_NBAPlayerStatistics(season = "01-02", what = c("", ".Home", ".Away"))
+NBA01_02$Three_pct <- NBA01_02$ThreesMade/NBA01_02$ThreesAttempted
+NBA01_02$Year <- 2002
+NBA01_02$Mean3p <- mean(NBA01_02$Three_pct, na.rm= TRUE)
+NBA01_02$Avobe_Av <- NBA01_02$Three_pct > NBA01_02$Mean3p
+
+NBA00_01 <- fetch_NBAPlayerStatistics(season = "00-01", what = c("", ".Home", ".Away"))
+NBA00_01$Three_pct <- NBA00_01$ThreesMade/NBA00_01$ThreesAttempted
+NBA00_01$Year <- 2001
+NBA00_01$Mean3p <- mean(NBA00_01$Three_pct, na.rm= TRUE)
+NBA00_01$Avobe_Av <- NBA00_01$Three_pct > NBA00_01$Mean3p
+
+NBA99_00 <- fetch_NBAPlayerStatistics(season = "99-00", what = c("", ".Home", ".Away"))
+NBA99_00$Three_pct <- NBA99_00$ThreesMade/NBA99_00$ThreesAttempted
+NBA99_00$Year <- 2000
+NBA99_00$Mean3p <- mean(NBA99_00$Three_pct, na.rm= TRUE)
+NBA99_00$Avobe_Av <- NBA99_00$Three_pct > NBA99_00$Mean3p
+
+NBA98_99 <- fetch_NBAPlayerStatistics(season = "98-99", what = c("", ".Home", ".Away"))
+NBA98_99$Three_pct <- NBA98_99$ThreesMade/NBA98_99$ThreesAttempted
+NBA98_99$Year <- 1999
+NBA98_99$Mean3p <- mean(NBA98_99$Three_pct, na.rm= TRUE)
+NBA98_99$Avobe_Av <- NBA98_99$Three_pct > NBA98_99$Mean3p
+
+NBA97_98 <- fetch_NBAPlayerStatistics(season = "97-98", what = c("", ".Home", ".Away"))
+NBA97_98$Three_pct <- NBA97_98$ThreesMade/NBA97_98$ThreesAttempted
+NBA97_98$Year <- 1998
+NBA97_98$Mean3p <- mean(NBA98_99$Three_pct, na.rm= TRUE)
+NBA97_98$Avobe_Av <- NBA97_98$Three_pct > NBA97_98$Mean3p
+
+
+NBA <- rbind (NBA15_16, NBA14_15, NBA13_14, NBA12_13, NBA11_12, NBA10_11, NBA09_10, NBA07_08 , NBA08_09, NBA06_07, NBA05_06, NBA04_05,  NBA03_04, NBA02_03, NBA01_02, NBA00_01, NBA99_00, NBA98_99, NBA97_98)
+NBA2 <- NBA
+NBA2$Position <- as.factor("All")
+
+NBA<- rbind(NBA2, NBA)
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+library(dplyr)
+
+#NBA <- filter(NBA, ThreesAttempted > 10)
+
+NBA_Year_Position <- group_by(NBA, Year, Position)
+
+NBA_Year_Position<- summarise(NBA_Year_Position, Mean = mean(Three_pct, na.rm = TRUE), SD = sd(Three_pct, na.rm = TRUE), n = n(), above = sum(Avobe_Av, na.rm = TRUE))
+NBA_Year_Position <- filter(NBA_Year_Position, Position != "NA")
+NBA_Year_Position$pct <- NBA_Year_Position$above/NBA_Year_Position$n
+
+library(ggplot2)
+ggthemr("earth", type="outer", layout="scientific", spacing=2)
+
+four <- ggplot(data = NBA_Year_Position, aes(x = Year, y = pct)) + geom_point(aes(color = Position)) + geom_smooth(aes(color=Position))
+
+NBA<- filter(NBA, Position != "NA")
+NBA<- filter(NBA, Three_pct != "NaN")
+
+Five <- ggplot(data = NBA, aes(x = Year, y = Three_pct)) + geom_smooth(aes(color=Position))
+```
+
+```{r, echo=FALSE, cache=TRUE, fig.cap= "Three point percentage trends from 1998 to 2016 by position"}
+ggthemr("earth", type="outer", layout="scientific", spacing=2)
+
+ggplot(data = NBA, aes(x = Year, y = Three_pct)) + stat_smooth(method="lm", aes(weight=TotalMinutesPlayed, color = Position)) + ylab("3-Point Shooting %")
+#ggplot(data = NBA, aes(x = Year, y = Three_pct)) + geom_smooth(aes(weight=TotalMinutesPlayed,color=Position))
+
+```
+
+
+```{r}
+library(ggplot2)
+ggthemr("earth", type="outer", layout="scientific", spacing=2)
+
+four
+
+Five
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+library(dplyr)
+library(knitr)
+NBA <- filter(NBA, ThreesMade >= 34)
+NBA <- filter(NBA, ThreesMade >= 45 | Year == "1999")
+NBA <- filter(NBA, ThreesMade >= 82 | Year == "1999" | Year == "2012")
+
+rank <- arrange(NBA, Year, desc(Three_pct))
+rank <- filter(rank, Position != "All")
+rank$Position <- factor(rank$Position)
+rank <- rank[,-c(1,3,5:25,28,29)]
+
+require(data.table)
+d <- data.table(rank, key="Year")
+rank <- d[, head(.SD, 40), by=Year]
+```
+
+```{r, echo = FALSE}
+rank<-data.frame(rank)
+rank<- (table(rank[,c(1,3)]))
+kable(rank)
+
+rank <- data.frame(rank)
+rank$pct <- rank$Freq/40
+rank$Year <- as.numeric(as.character(rank$Year))
+rank <- filter(rank, Position != "All")
+ggplot(rank, aes(x = Year, y = pct)) + geom_point(aes(colour = Position)) + geom_smooth(aes(color=Position))
+```

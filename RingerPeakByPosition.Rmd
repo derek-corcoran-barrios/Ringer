@@ -1,0 +1,190 @@
+---
+title: "Ringer peak age by position"
+author: "Derek Corcoran"
+date: "July 13, 2016"
+output: pdf_document
+---
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(knitr)
+library(XML)
+library(ggplot2)
+library(dplyr)
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+URL="http://www.basketball-reference.com/play-index/psl_finder.cgi?request=1&match=single&per_minute_base=36&per_poss_base=100&type=advanced&lg_id=NBA&is_playoffs=N&year_min=1980&year_max=&franch_id=&season_start=1&season_end=-1&age_min=0&age_max=99&height_min=0&height_max=99&shoot_hand=&birth_country_is=Y&birth_country=&birth_state=&college_id=&draft_year=&is_active=&debut_yr_nba_start=&debut_yr_nba_end=&debut_yr_aba_start=&debut_yr_aba_end=&is_hof=&is_as=&as_comp=gt&as_val=&award=&pos_is_g=Y&pos_is_gf=Y&pos_is_f=Y&pos_is_fg=Y&pos_is_fc=Y&pos_is_c=Y&pos_is_cf=Y&qual=mp_per_g_req&c1stat=&c1comp=gt&c1val=&c2stat=&c2comp=gt&c2val=&c3stat=&c3comp=gt&c3val=&c4stat=&c4comp=gt&c4val=&c5stat=&c5comp=gt&c6mult=1.0&c6stat=&order_by=season&order_by_asc=&offset="
+numerals <- seq(from = 0, to = 7200, by = 100)
+NBAlist <- list()
+for(i in 1:73)
+{
+  URL1= paste(URL, numerals[i], sep = "")
+  tablefromURL = readHTMLTable(URL1)
+  NBAlist[[i]] = tablefromURL[[3]]
+}
+big_data = do.call(rbind, NBAlist)
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+big_data$Age <- as.numeric(as.character(big_data$Age))
+big_data$PER <- as.numeric(as.character(big_data$PER))
+big_data$MP <- as.numeric(as.character(big_data$MP))
+str(big_data)
+
+summary(big_data)
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+library(ggplot2)
+fit <- lm(PER ~ Age + I(Age^2), weights= MP, data = big_data)
+prd <- data.frame(Age = seq(from = min(range(big_data$Age, na.rm = TRUE)), to = max(range(big_data$Age, na.rm = TRUE)), length.out = 100))
+err <- predict(fit, newdata = prd, se.fit = TRUE)
+ 
+prd$lci <- err$fit - 1.96 * err$se.fit
+prd$fit <- err$fit
+prd$uci <- err$fit + 1.96 * err$se.fit
+ 
+ggplot(prd, aes(x = Age, y = fit)) +
+   theme_bw() +
+   geom_line() +   geom_smooth(aes(ymin = lci, ymax = uci), stat = "identity")
+
+```
+
+#Guards
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+URL="http://www.basketball-reference.com/play-index/psl_finder.cgi?request=1&match=single&type=advanced&per_minute_base=36&per_poss_base=100&lg_id=NBA&is_playoffs=N&year_min=1980&year_max=&franch_id=&season_start=1&season_end=-1&age_min=0&age_max=99&shoot_hand=&height_min=0&height_max=99&birth_country_is=Y&birth_country=&birth_state=&college_id=&draft_year=&is_active=&debut_yr_aba_start=&debut_yr_aba_end=&debut_yr_nba_start=&debut_yr_nba_end=&is_hof=&is_as=&as_comp=gt&as_val=&award=&pos_is_g=Y&pos_is_gf=&pos_is_f=&pos_is_fg=&pos_is_fc=&pos_is_c=&pos_is_cf=&qual=mp_per_g_req&c1stat=&c1comp=gt&c1val=&c2stat=&c2comp=gt&c2val=&c3stat=&c3comp=gt&c3val=&c4stat=&c4comp=gt&c4val=&c5stat=&c5comp=gt&c6mult=1.0&c6stat=&order_by=season&order_by_asc=&offset="
+numerals <- seq(from = 0, to = 2300, by = 100)
+NBAlistGuards <- list()
+for(i in 1:24)
+{
+  URL1= paste(URL, numerals[i], sep = "")
+  tablefromURL = readHTMLTable(URL1)
+  NBAlistGuards[[i]] = tablefromURL[[3]]
+}
+big_dataGuards = do.call(rbind, NBAlistGuards)
+
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+big_dataGuards$Age <- as.numeric(as.character(big_dataGuards$Age))
+big_dataGuards$PER <- as.numeric(as.character(big_dataGuards$PER))
+big_dataGuards$Position <- c("Guard")
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=FALSE}
+library(ggplot2)
+fit <- lm(PER ~ Age + I(Age^2), data = big_dataGuards)
+prd <- data.frame(Age = seq(from = min(range(big_dataGuards$Age, na.rm = TRUE)), to = max(range(big_dataGuards$Age, na.rm = TRUE)), length.out = 100))
+err <- predict(fit, newdata = prd, se.fit = TRUE)
+ 
+prd$lci <- err$fit - 1.96 * err$se.fit
+prd$fit <- err$fit
+prd$uci <- err$fit + 1.96 * err$se.fit
+ 
+ggplot(prd, aes(x = Age, y = fit)) +
+   theme_bw() +
+   geom_line() +   geom_smooth(aes(ymin = lci, ymax = uci), stat = "identity")
+ 
+```
+
+#Frowards
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+URL="http://www.basketball-reference.com/play-index/psl_finder.cgi?request=1&match=single&type=advanced&per_minute_base=36&per_poss_base=100&lg_id=NBA&is_playoffs=N&year_min=1980&year_max=&franch_id=&season_start=1&season_end=-1&age_min=0&age_max=99&shoot_hand=&height_min=0&height_max=99&birth_country_is=Y&birth_country=&birth_state=&college_id=&draft_year=&is_active=&debut_yr_aba_start=&debut_yr_aba_end=&debut_yr_nba_start=&debut_yr_nba_end=&is_hof=&is_as=&as_comp=gt&as_val=&award=&pos_is_g=&pos_is_gf=&pos_is_f=Y&pos_is_fg=&pos_is_fc=&pos_is_c=&pos_is_cf=&qual=mp_per_g_req&c1stat=&c1comp=gt&c1val=&c2stat=&c2comp=gt&c2val=&c3stat=&c3comp=gt&c3val=&c4stat=&c4comp=gt&c4val=&c5stat=&c5comp=gt&c6mult=1.0&c6stat=&order_by=season&order_by_asc=&offset="
+numerals <- seq(from = 0, to = 1700, by = 100)
+NBAlistFrowards <- list()
+for(i in 1:18)
+{
+  URL1= paste(URL, numerals[i], sep = "")
+  tablefromURL = readHTMLTable(URL1)
+  NBAlistFrowards[[i]] = tablefromURL[[3]]
+}
+big_dataFrowards = do.call(rbind, NBAlistFrowards)
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+big_dataFrowards$Age <- as.numeric(as.character(big_dataFrowards$Age))
+big_dataFrowards$PER <- as.numeric(as.character(big_dataFrowards$PER))
+big_dataFrowards$Position <- c("Froward")
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=FALSE}
+library(ggplot2)
+fit <- lm(PER ~ Age + I(Age^2), data = big_dataFrowards)
+prd <- data.frame(Age = seq(from = min(range(big_dataFrowards$Age, na.rm = TRUE)), to = max(range(big_dataFrowards$Age, na.rm = TRUE)), length.out = 100))
+err <- predict(fit, newdata = prd, se.fit = TRUE)
+ 
+prd$lci <- err$fit - 1.96 * err$se.fit
+prd$fit <- err$fit
+prd$uci <- err$fit + 1.96 * err$se.fit
+ 
+ggplot(prd, aes(x = Age, y = fit)) +
+   theme_bw() +
+   geom_line() +   geom_smooth(aes(ymin = lci, ymax = uci), stat = "identity")
+```
+
+#Centers
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+URL="http://www.basketball-reference.com/play-index/psl_finder.cgi?request=1&match=single&type=advanced&per_minute_base=36&per_poss_base=100&lg_id=NBA&is_playoffs=N&year_min=1980&year_max=&franch_id=&season_start=1&season_end=-1&age_min=0&age_max=99&shoot_hand=&height_min=0&height_max=99&birth_country_is=Y&birth_country=&birth_state=&college_id=&draft_year=&is_active=&debut_yr_aba_start=&debut_yr_aba_end=&debut_yr_nba_start=&debut_yr_nba_end=&is_hof=&is_as=&as_comp=gt&as_val=&award=&pos_is_g=&pos_is_gf=&pos_is_f=&pos_is_fg=&pos_is_fc=&pos_is_c=Y&pos_is_cf=&qual=mp_per_g_req&c1stat=&c1comp=gt&c1val=&c2stat=&c2comp=gt&c2val=&c3stat=&c3comp=gt&c3val=&c4stat=&c4comp=gt&c4val=&c5stat=&c5comp=gt&c6mult=1.0&c6stat=&order_by=season&order_by_asc=&offset="
+numerals <- seq(from = 0, to = 700, by = 100)
+NBAlistCenters <- list()
+for(i in 1:8)
+{
+  URL1= paste(URL, numerals[i], sep = "")
+  tablefromURL = readHTMLTable(URL1)
+  NBAlistCenters[[i]] = tablefromURL[[3]]
+}
+big_dataCenters = do.call(rbind, NBAlistCenters)
+
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+big_dataCenters$Age <- as.numeric(as.character(big_dataCenters$Age))
+big_dataCenters$PER <- as.numeric(as.character(big_dataCenters$PER))
+big_dataCenters$MP <- as.numeric(as.character(big_dataCenters$MP))
+big_dataCenters$Position <- c("Center")
+str(big_dataCenters)
+summary(big_dataCenters)
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=FALSE}
+library(ggplot2)
+fit <- lm(PER ~ Age + I(Age^2), weights = MP ,data = big_dataCenters)
+prd <- data.frame(Age = seq(from = min(range(big_dataCenters$Age, na.rm = TRUE)), to = max(range(big_dataCenters$Age, na.rm = TRUE)), length.out = 100))
+err <- predict(fit, newdata = prd, se.fit = TRUE)
+ 
+prd$lci <- err$fit - 1.96 * err$se.fit
+prd$fit <- err$fit
+prd$uci <- err$fit + 1.96 * err$se.fit
+ 
+ggplot(prd, aes(x = Age, y = fit)) +
+   theme_bw() +
+   geom_line() +   geom_smooth(aes(ymin = lci, ymax = uci), stat = "identity")
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+
+
+big_dataNBA <- rbind.data.frame(big_dataGuards, big_dataFrowards, big_dataCenters)
+big_dataNBA$Position <- as.factor(big_dataNBA$Position)
+str(big_dataNBA)
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+NBA_Year_Position <- group_by(big_dataNBA, Age, Position)
+
+NBA_Year_Position<- summarise(NBA_Year_Position, Mean = mean(PER, na.rm = TRUE), SD= sd(PER, na.rm = TRUE), n = n())
+
+kable(NBA_Year_Position)
+
+All <- ggplot(data = NBA_Year_Position, aes(x = Age, y = Mean, group = Position))  + geom_line(aes(color = Position)) + geom_smooth(aes(color= Position))
+
+All
+saveRDS(NBA_Year_Position, "NBA_Year_Position.rds")
+```
