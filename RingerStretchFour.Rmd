@@ -173,8 +173,8 @@ NBA<- filter(NBA, Three_pct != "NaN")
 ```
 
 #Results
-
-As we see in figure 2 we see that every position has improved the 3 pt percentage in the last 18 years in the NBA. It seems that Small Frowards, Power Frowards, and Centers have improved a lot more than guards, but guards keep having a higher 3 point percentage than frowards and Centers. According to the GML (Table 1) Small Frowards are the ones having a higher than average three point shooting, also looking at the points in figure 1, we can see that Small Frowards have averaged more than 33% in three point shots on the last 2 years, wich is the threshold of the three point shot equaling the value of a 50% two pointer.
+##Three point percentage per position
+As we see in figure 2 we see that every position has improved the 3 pt percentage in the last 18 years in the NBA. It seems that Small Frowards, Power Frowards, and Centers have improved a lot more than guards, but guards keep having a higher 3 point percentage than frowards and Centers. According to the GML (Table 1) Small Frowards are the ones having a higher than average three point shooting, also looking at the points in figure 1, we can see that Small Frowards have averaged more than 33% in three point shots on the last 2 years, which is the threshold of the three point shot equaling the value of a 50% two pointer.
 
 ```{r, echo=FALSE, cache=TRUE, fig.cap= "Three point percentage trends from 1998 to 2016 by position, the red horizontal line shows the 33% threshold of the three point shot equaling the value of a 50% two pointer"}
 ggthemr("earth", type="outer", layout="scientific", spacing=2)
@@ -189,6 +189,15 @@ library(stargazer)
 stargazer(glm(Mean ~ Year + Position, data = NBA_Year_Position), title = "Glm terms and their p-values")
 
 ```
+
+##Percentage of players by position with above average three point shooting percentage
+
+We also see an increace of the percentage of players by position that are above average three point shooters, as we see in Figure 3, small Frowards, Power Frowards and Center have increased the percentage of players that are avobe average three point shooters, put still only Shoting Guards, Small Frowards and Point Guards are the only ones with over 50% of players with above average shooting.
+
+
+##Percentage of players by position in the top 40 of 3 point shooting percentage
+
+Finally when we analize the percentage of players per position in elite of 3 point shooters we see that in that regard the percentage of elite shooters among centers and Power Frowards has not increased in the last 18 years, whereas Small Frowards and Point Guards have (Figure 4)
 
 ```{r, echo= FALSE, cache= FALSE, fig.cap="Percentage of players by position, above that year 3 point shooting percentage average"}
 library(ggplot2)
