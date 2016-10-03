@@ -10,6 +10,8 @@ library(knitr)
 library(XML)
 library(ggplot2)
 library(dplyr)
+library(lme4)
+library(sjPlot)
 ```
 
 You can also embed plots, for example:
@@ -151,6 +153,9 @@ big_dataCenters$MP <- as.numeric(as.character(big_dataCenters$MP))
 big_dataCenters$Position <- c("Center")
 str(big_dataCenters)
 summary(big_dataCenters)
+LME <- lmer(PER ~ Age + I(Age^2) + (1|Player), data = big_dataCenters) 
+summary(LME)
+
 ```
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=FALSE}
@@ -168,12 +173,29 @@ ggplot(prd, aes(x = Age, y = fit)) +
    geom_line() +   geom_smooth(aes(ymin = lci, ymax = uci), stat = "identity")
 ```
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+#Here
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE}
 
 
 big_dataNBA <- rbind.data.frame(big_dataGuards, big_dataFrowards, big_dataCenters)
 big_dataNBA$Position <- as.factor(big_dataNBA$Position)
 str(big_dataNBA)
+
+LMENULL <- lmer(PER ~ Age + I(Age^2) + (1|Player), data = big_dataNBA, REML=FALSE) 
+LME1 <- lmer(PER ~ Age + I(Age^2) + Position + Age*Position + (1|Player), data = big_dataNBA, REML=FALSE) 
+LME2 <- lmer(PER ~ Age + I(Age^2) + Position + Age*Position + (1+ Age|Player), data = big_dataNBA, REML=FALSE) 
+
+GLME2 <- glmer(PER ~ Age + I(Age^2) + Position + Age*Position + (1+ Age|Player), data = big_dataNBA, REML=FALSE) 
+
+summary(LME1)
+summary(LME2)
+summary(GLME2)
+sjp.glmer(GLME2, type = "eff", show.ci = TRUE)
+sjp.glmer(GLME2, type = "pred", 
+          vars = c("Position"),
+          facet.grid = F)#anova(LME1, LME2)
+
 ```
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}

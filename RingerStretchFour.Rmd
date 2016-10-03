@@ -23,7 +23,7 @@ trend <- lang_trend$trend
 plot(lang_trend)
 ```
 
-We keep hearing how NBA players say the will add the three point shot to their repertoir during the off-season, if that was the case we could start seeing more three point shooting power frowards like Dirk or Kevin love in pace and space line-ups that don't sacrifice defensive rebounding, height or rim protection, but are Power Frowards adapting to their new reality? We will analize the data of three point shooting from season 97-98 to now to see the answer.
+We keep hearing how NBA players say the will add the three point shot to their repertoir during the off-season, if that was the case we could start seeing more three point shooting power frowards like Dirk Nowitzki or Kevin love in pace and space line-ups that don't sacrifice defensive rebounding, height or rim protection, but are Power Frowards adapting to their new reality? We will analize the data of three point shooting from season 97-98 to now to see the answer.
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
 library(SportsAnalytics)
@@ -149,7 +149,8 @@ NBA2$Position <- as.factor("All")
 NBA<- rbind(NBA2, NBA)
 ```
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE, fig.cap="Percentage of players by position shooting above average 3 point shooting percentage"}
+
 library(dplyr)
 
 #NBA <- filter(NBA, ThreesAttempted > 10)
@@ -162,32 +163,40 @@ NBA_Year_Position$pct <- NBA_Year_Position$above/NBA_Year_Position$n
 
 library(ggplot2)
 ggthemr("earth", type="outer", layout="scientific", spacing=2)
+four <- ggplot(data = NBA_Year_Position, aes(x = Year, y = pct)) + geom_point(aes(color = Position)) + geom_smooth(method = "lm",aes(color=Position))
+```
 
-four <- ggplot(data = NBA_Year_Position, aes(x = Year, y = pct)) + geom_point(aes(color = Position)) + geom_smooth(aes(color=Position))
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
 
 NBA<- filter(NBA, Position != "NA")
 NBA<- filter(NBA, Three_pct != "NaN")
-
-Five <- ggplot(data = NBA, aes(x = Year, y = Three_pct)) + geom_smooth(aes(color=Position))
 ```
 
-```{r, echo=FALSE, cache=TRUE, fig.cap= "Three point percentage trends from 1998 to 2016 by position"}
+#Results
+
+As we see in figure 2 we see that every position has improved the 3 pt percentage in the last 18 years in the NBA. It seems that Small Frowards, Power Frowards, and Centers have improved a lot more than guards, but guards keep having a higher 3 point percentage than frowards and Centers. According to the GML (Table 1) Small Frowards are the ones having a higher than average three point shooting, also looking at the points in figure 1, we can see that Small Frowards have averaged more than 33% in three point shots on the last 2 years, wich is the threshold of the three point shot equaling the value of a 50% two pointer.
+
+```{r, echo=FALSE, cache=TRUE, fig.cap= "Three point percentage trends from 1998 to 2016 by position, the red horizontal line shows the 33% threshold of the three point shot equaling the value of a 50% two pointer"}
 ggthemr("earth", type="outer", layout="scientific", spacing=2)
 
-ggplot(data = NBA, aes(x = Year, y = Three_pct)) + stat_smooth(method="lm", aes(weight=TotalMinutesPlayed, color = Position)) + ylab("3-Point Shooting %")
+ggplot(data = NBA_Year_Position, aes(x = Year, y = Mean)) + stat_smooth(method="lm", aes(color = Position)) + ylab("3-Point Shooting %") + geom_hline(aes(yintercept= 0.33))+ geom_point(aes(color = Position), alpha = 0.5)
 #ggplot(data = NBA, aes(x = Year, y = Three_pct)) + geom_smooth(aes(weight=TotalMinutesPlayed,color=Position))
 
 ```
 
+```{r,r, echo=FALSE, cache=TRUE, results="asis"}
+library(stargazer)
+stargazer(glm(Mean ~ Year + Position, data = NBA_Year_Position), title = "Glm terms and their p-values")
 
-```{r}
+```
+
+```{r, echo= FALSE, cache= FALSE, fig.cap="Percentage of players by position, above that year 3 point shooting percentage average"}
 library(ggplot2)
 ggthemr("earth", type="outer", layout="scientific", spacing=2)
 
 four
-
-Five
 ```
+
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -207,14 +216,14 @@ d <- data.table(rank, key="Year")
 rank <- d[, head(.SD, 40), by=Year]
 ```
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, fig.cap= "Percentage of players by position in the top 40 of NBA 3 point shooting percentage"}
 rank<-data.frame(rank)
 rank<- (table(rank[,c(1,3)]))
-kable(rank)
+ggthemr("earth", type="outer", layout="scientific", spacing=2)
 
 rank <- data.frame(rank)
 rank$pct <- rank$Freq/40
 rank$Year <- as.numeric(as.character(rank$Year))
 rank <- filter(rank, Position != "All")
-ggplot(rank, aes(x = Year, y = pct)) + geom_point(aes(colour = Position)) + geom_smooth(aes(color=Position))
+ggplot(rank, aes(x = Year, y = pct)) + geom_point(aes(colour = Position)) + geom_smooth(method = "lm",aes(color=Position))
 ```

@@ -3,3 +3,6 @@ knitr
 XML
 ggplot2
 dplyr
+Matrix
+lme4
+sjPlot
