@@ -154,7 +154,7 @@ NBA<- rbind(NBA2, NBA)
 library(dplyr)
 
 #NBA <- filter(NBA, ThreesAttempted > 10)
-
+saveRDS(NBA, "NBA.rds")
 NBA_Year_Position <- group_by(NBA, Year, Position)
 
 NBA_Year_Position<- summarise(NBA_Year_Position, Mean = mean(Three_pct, na.rm = TRUE), SD = sd(Three_pct, na.rm = TRUE), n = n(), above = sum(Avobe_Av, na.rm = TRUE))

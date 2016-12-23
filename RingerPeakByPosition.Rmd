@@ -36,6 +36,7 @@ big_data$MP <- as.numeric(as.character(big_data$MP))
 str(big_data)
 
 summary(big_data)
+saveRDS(big_data, "big_data.rds")
 ```
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
