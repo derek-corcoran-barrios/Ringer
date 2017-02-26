@@ -43,6 +43,12 @@ library(caret)
 
 preprocov <- preProcess(BD[,-c(1:9)])
 BD[,-c(1:9)] <- predict(preprocov, BD[,-c(1:9)])
+BD$ThreePpct[is.na(BD$ThreePpct)] <- min(BD$ThreePpct, na.rm = TRUE)
+
+Vars<- BD[,c(13,15,17,20,21,22,23,24,26,28:31)]
+
+#Get lower triangle matrix to subsett without high correlation
+
 
 Models <- list()
 
@@ -51,8 +57,11 @@ options(na.action = "na.fail")
 
 for(i in 1:length(unique(BD$Season))){
   temp <- dplyr::filter(BD, Season == unique(BD$Season)[i])
+  Vars<- BD[,c(13,15,17,20,21,22,23,24,26,28:31)]
+  smat <- abs(cor(Vars)) <= .7
+  smat[!lower.tri(smat)] <- NA
   Model <- glm(MPG~ TwoPA + ThreePA + FTA+ TRB +  AST + STL + BLK +  TOV + PTS +  TwoPpct + ThreePpct + eFGpct + FTpct, data = temp)
-  Select.Model <- dredge(Model)
+  Select.Model <- dredge(Model, subset = smat)
   Best.Model<-get.models(Select.Model, 1)[[1]]
   Models[[i]] <- data.frame(matrix(summary(Best.Model)$coefficients[,1], ncol = length(summary(Best.Model)$coefficients[,1]), nrow = 1))
   colnames(Models[[i]]) <- rownames(summary(Best.Model)$coefficients)
@@ -64,5 +73,22 @@ Models <- Reduce(function(x,y) merge(x, y, all = TRUE), Models)
 Models <- dplyr::arrange(Models, Season)
 View(Models)
 
-Model <- lm(MPG~ Season + ThreePAr + I(ThreePAr^2) + Age + FTr+ I(FTr^2) +  ASTpct + I(ASTpct^2) + STLpct +  BLKpct, data = BD)
+saveRDS(Models, "Models.rds")
+
+library(reshape2)
+
+Models <- Models[,-1]
+
+dfm <- melt(Models, id.vars="Season")
+dfm$sign <- ifelse(dfm$value > 0 , "+" , ifelse(dfm$value < 0, "-", ""))
+
+
+p <- ggplot(dfm, aes(x=variable, y=Season)) +  geom_tile(aes(fill=value), colour = "black") + scale_fill_gradient2(low = "blue", high = 'red', name="Strength") + theme(axis.text.x = element_text(angle = 50, hjust = 1, vjust = 1)) + theme_classic()
+p
+
+ggplot(Models, aes(x = Season)) + geom_point(color = "red", aes(y = TRB)) + geom_smooth(fill = "red", color = "red", aes(y = TRB))  + geom_point(color = "blue", aes(y = AST)) + geom_smooth(fill = "blue", color = "blue", aes(y = AST)) + scale_fill_manual(values = c("red", "blue"))
+
+dfm2 <- dplyr::filter(dfm, variable == "AST" | variable == "TRB" | variable == "PTS" | variable == "TOV")
+
+ggplot(data=dfm2, aes(x=Season, y=abs(value), colour=variable)) +geom_point() + geom_smooth(aes(fill = variable))
 
