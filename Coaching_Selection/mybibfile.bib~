@@ -1,0 +1,57 @@
+@article{barton2013mumin,
+  title={MuMIn: Multi-model inference. R package version 1.9. 13},
+  author={Barto{\'n}, Kamil},
+  journal={The Comprehensive R Archive Network (CRAN), Vienna, Austria},
+  year={2013}
+}
+
+@article{bro2003centering,
+  title={Centering and scaling in component analysis},
+  author={Bro, Rasmus and Smilde, Age K},
+  journal={Journal of Chemometrics},
+  volume={17},
+  number={1},
+  pages={16--33},
+  year={2003},
+  publisher={Wiley Online Library}
+}
+
+@article{burnham2002information,
+  title={Information and likelihood theory: a basis for model selection and inference},
+  author={Burnham, KP and Anderson, DR},
+  journal={Model selection and multimodel inference: a practical information-theoretic approach},
+  volume={2},
+  pages={49--97},
+  year={2002},
+  publisher={Springer-Verlag New York}
+}
+
+@article{cade2015model,
+  title={Model averaging and muddled multimodel inferences},
+  author={Cade, Brian S},
+  journal={Ecology},
+  volume={96},
+  number={9},
+  pages={2370--2382},
+  year={2015},
+  publisher={Wiley Online Library}
+}
+
+@article{dormann2013collinearity,
+  title={Collinearity: a review of methods to deal with it and a simulation study evaluating their performance},
+  author={Dormann, Carsten F and Elith, Jane and Bacher, Sven and Buchmann, Carsten and Carl, Gudrun and Carr{\'e}, Gabriel and Marqu{\'e}z, Jaime R Garc{\'\i}a and Gruber, Bernd and Lafourcade, Bruno and Leit{\~a}o, Pedro J and others},
+  journal={Ecography},
+  volume={36},
+  number={1},
+  pages={27--46},
+  year={2013},
+  publisher={Wiley Online Library}
+}
+
+@book{kuhn2013applied,
+  title={Applied predictive modeling},
+  author={Kuhn, Max and Johnson, Kjell},
+  volume={26},
+  year={2013},
+  publisher={Springer}
+}

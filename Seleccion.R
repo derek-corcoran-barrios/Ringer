@@ -37,9 +37,9 @@ library(ggplot2)
 library(MuMIn)
 library(caret)
 
+BD$ThreePpct[is.na(BD$ThreePpct)] <- 0
 preprocov <- preProcess(BD[,-c(1:9,33)])
 BD[,-c(1:9,33)] <- predict(preprocov, BD[,-c(1:9,33)])
-BD$ThreePpct[is.na(BD$ThreePpct)] <- min(BD$ThreePpct, na.rm = TRUE)
 
 Vars<- BD[,c(13,15,17,20,21,22,23,24,26,28:31)]
 
@@ -87,7 +87,6 @@ dfm$sign <- ifelse(dfm$value > 0 , "+" , ifelse(dfm$value < 0, "-", ""))
 p <- ggplot(dfm, aes(x=variable, y=Season)) +  geom_tile(aes(fill=value), colour = "black") + scale_fill_gradient2(low = "blue", high = 'red', name="Strength") + theme(axis.text.x = element_text(angle = 50, hjust = 1, vjust = 1)) + theme_classic()
 p
 
-ggplot(Models, aes(x = Season)) + geom_point(color = "red", aes(y = TRB)) + geom_smooth(fill = "red", color = "red", aes(y = TRB))  + geom_point(color = "blue", aes(y = AST)) + geom_smooth(fill = "blue", color = "blue", aes(y = AST)) + scale_fill_manual(values = c("red", "blue"))
 
 dfm2 <- dplyr::filter(dfm, variable == "AST" | variable == "TRB" | variable == "PTS" | variable == "TOV")
 

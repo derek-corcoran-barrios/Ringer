@@ -1,0 +1,212 @@
+\documentclass[]{elsarticle} %review=doublespace preprint=single 5p=2 column
+%%% Begin My package additions %%%%%%%%%%%%%%%%%%%
+\usepackage[hyphens]{url}
+\usepackage{lineno} % add
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+\bibliographystyle{elsarticle-harv}
+\biboptions{sort&compress} % For natbib
+\usepackage{graphicx}
+\usepackage{booktabs} % book-quality tables
+%% Redefines the elsarticle footer
+%\makeatletter
+%\def\ps@pprintTitle{%
+% \let\@oddhead\@empty
+% \let\@evenhead\@empty
+% \def\@oddfoot{\it \hfill\today}%
+% \let\@evenfoot\@oddfoot}
+%\makeatother
+
+% A modified page layout
+\textwidth 6.75in
+\oddsidemargin -0.15in
+\evensidemargin -0.15in
+\textheight 9in
+\topmargin -0.5in
+%%%%%%%%%%%%%%%% end my additions to header
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \usepackage{fontspec}
+  \ifxetex
+    \usepackage{xltxtra,xunicode}
+  \fi
+  \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+  \newcommand{\euro}{€}
+\fi
+% use microtype if available
+\IfFileExists{microtype.sty}{\usepackage{microtype}}{}
+\ifxetex
+  \usepackage[setpagesize=false, % page size defined by xetex
+              unicode=false, % unicode breaks when used with xetex
+              xetex]{hyperref}
+\else
+  \usepackage[unicode=true]{hyperref}
+\fi
+\hypersetup{breaklinks=true,
+            bookmarks=true,
+            pdfauthor={},
+            pdftitle={Have coaches changed how they select which players to give more minutes to?},
+            colorlinks=true,
+            urlcolor=blue,
+            linkcolor=magenta,
+            pdfborder={0 0 0}}
+\urlstyle{same}  % don't use monospace font for urls
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\setcounter{secnumdepth}{0}
+% Pandoc toggle for numbering sections (defaults to be off)
+\setcounter{secnumdepth}{0}
+% Pandoc header
+
+
+\usepackage[nomarkers]{endfloat}
+
+\begin{document}
+\begin{frontmatter}
+
+  \title{Have coaches changed how they select which players to give more minutes
+to?}
+    \author[Pontificia Universidad Catolica de Chile]{Derek Corcoran\corref{c1}}
+   \ead{derek.corcoran.barrios@gmail.com} 
+   \cortext[c1]{Corresponding Author}
+    \author[The University of Mississippi]{Nicholas M. Watanabe}
+   \ead{nmwatana@olemiss.edu} 
+  
+      \address[Some Institute of Technology]{Department, Street, City, State, Zip}
+    \address[Another University]{Department, Street, City, State, Zip}
+  
+  \begin{abstract}
+  Since the NBA adopted the three point line in .
+  
+  It consists of two paragraphs.
+  \end{abstract}
+  
+ \end{frontmatter}
+
+\emph{Text based on elsarticle sample manuscript, see
+\url{http://www.elsevier.com/author-schemas/latex-instructions\#elsarticle}}
+
+\section{The Elsevier article class}\label{the-elsevier-article-class}
+
+\paragraph{Installation}\label{installation}
+
+If the document class \emph{elsarticle} is not available on your
+computer, you can download and install the system package
+\emph{texlive-publishers} (Linux) or install the LaTeX~package
+\emph{elsarticle} using the package manager of your TeX~installation,
+which is typically TeX~Live or MikTeX.
+
+\paragraph{Usage}\label{usage}
+
+Once the package is properly installed, you can use the document class
+\emph{elsarticle} to create a manuscript. Please make sure that your
+manuscript follows the guidelines in the Guide for Authors of the
+relevant journal. It is not necessary to typeset your manuscript in
+exactly the same way as an article, unless you are submitting to a
+camera-ready copy (CRC) journal.
+
+\subsection{Methods}\label{methods}
+
+All variables were scaled and centered (Bro and Smilde 2003) using the
+caret package (Kuhn and Johnson 2013). We performed all of the analyses
+using R statistical Software (R Core Team 2016). We fitted the occupancy
+models were using the unmarked package (Fiske and Chandler 2011) and we
+ranked the models based on Akaike's Information Criteria for small
+sample sizes (AICc) using the MuMin Package (Bartoń 2016). First, we
+selected the best detection probability model for each species by
+fitting all possible first order models while holding occupancy
+constant. Next, the detection portion of the model was fixed while the
+occupancy component of the model was selected following similar steps.
+Since both burn intensity measurements were highly correlated
+(\textgreater{}= 0.98 Pearson correlation coefficient), we did not allow
+those variables to coexist in the tested models. We expected non-linear
+relationships between fire intensity and occupancy, and thus we included
+both the linear and quadratic parameter of the burn intensity variables.
+We didn't use model averaging since even though collinear variables were
+prohibited to coexist in the same model, these might coexist in the
+average model (Cade 2015). We projected the resulting occupancy model to
+the entire National Forest for each species included in this study and
+the best model for each species was assessed for goodness of fit using a
+Pearson Chi square statistic (MacKenzie and Bailey 2004). For each bat
+species, occupancy inside and outside of the fire areas was compared by
+with a t-test between the fitted values for the sampled points.
+
+\paragraph{Functionality}\label{functionality}
+
+The Elsevier article class is based on the standard article class and
+supports almost all of the functionality of that class. In addition, it
+features commands and options to format the
+
+\begin{itemize}
+\item
+  document style
+\item
+  baselineskip
+\item
+  front matter
+\item
+  keywords and MSC codes
+\item
+  theorems, definitions and proofs
+\item
+  lables of enumerations
+\item
+  citation style and labeling.
+\end{itemize}
+
+\section{Front matter}\label{front-matter}
+
+The author names and affiliations could be formatted in two ways:
+
+\begin{enumerate}
+\def\labelenumi{(\arabic{enumi})}
+\item
+  Group the authors per affiliation.
+\item
+  Use footnotes to indicate the affiliations.
+\end{enumerate}
+
+See the front matter of this document for examples. You are recommended
+to conform your choice to the journal you are submitting to.
+
+\section{Bibliography styles}\label{bibliography-styles}
+
+There are various bibliography styles available. You can select the
+style of your choice in the preamble of this document. These styles are
+Elsevier styles based on standard styles like Harvard and Vancouver.
+Please use BibTeX~to generate your bibliography and include DOIs
+whenever available.
+
+Here are two sample references: Barto{ń} (2013; Cade 2015).
+
+\section*{References}\label{references}
+\addcontentsline{toc}{section}{References}
+
+Barto{ń}, Kamil. 2013. ``MuMIn: Multi-Model Inference. R Package Version
+1.9. 13.'' \emph{The Comprehensive R Archive Network (CRAN), Vienna,
+Austria}.
+
+Bro, Rasmus, and Age K Smilde. 2003. ``Centering and Scaling in
+Component Analysis.'' \emph{Journal of Chemometrics} 17 (1). Wiley
+Online Library: 16--33.
+
+Cade, Brian S. 2015. ``Model Averaging and Muddled Multimodel
+Inferences.'' \emph{Ecology} 96 (9). Wiley Online Library: 2370--82.
+
+Kuhn, Max, and Kjell Johnson. 2013. \emph{Applied Predictive Modeling}.
+Vol. 26. Springer.
+
+\end{document}
+
+
