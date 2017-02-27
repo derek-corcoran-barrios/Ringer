@@ -24,11 +24,50 @@ output: rticles::elsevier_article
 
 _Text based on elsarticle sample manuscript, see [http://www.elsevier.com/author-schemas/latex-instructions#elsarticle](http://www.elsevier.com/author-schemas/latex-instructions#elsarticle)_
 
-
 The Elsevier article class
 ==========================
 
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+
+```
 #### Installation
+
+
+```{r, cache=TRUE}
+
+setwd("/home/derek/Documents/TheRinger")
+BD <- readRDS("big_data.rds")
+setwd("/home/derek/Documents/TheRinger/Coaching_Selection")
+
+BD <- BD[complete.cases(BD),]
+BD <- BD[,-1]
+BD$MPG <- as.numeric(as.character(BD$MP))/as.numeric(as.character(BD$G))
+
+BD <- BD[,c(1,2,3,4,30)]
+
+
+#Data of stats per 100 possessions
+setwd("/home/derek/Documents/TheRinger")
+NS <- readRDS("NS.rds")
+setwd("/home/derek/Documents/TheRinger/Coaching_Selection")
+NS <- NS[complete.cases(NS),]
+NS <- NS[,-1]
+
+#Merge by player and season
+
+BD <- merge(NS, BD, all = TRUE)
+
+BD <- BD[complete.cases(BD),]
+
+
+BD$Season <- (as.numeric(gsub("\\-.*","",BD$Season)) + 1)
+
+NN <- dplyr::group_by(BD, Season)
+NN <- dplyr::summarise(NN, 'number of players' = n())
+```
 
 If the document class *elsarticle* is not available on your computer,
 you can download and install the system package *texlive-publishers*
@@ -46,8 +85,92 @@ camera-ready copy (CRC) journal.
 
 ## Methods
 
-All variables were scaled and centered [@bro2003centering] using the caret package [@kuhn2013applied].
-We performed all of the analyses using R statistical Software (R Core Team 2016). We fitted the occupancy models were using the unmarked package (Fiske and Chandler 2011) and we ranked the models based on Akaike’s Information Criteria for small sample sizes (AICc) using the MuMin Package (Bartoń 2016). First, we selected the best detection probability model for each species by fitting all possible first order models while holding occupancy constant. Next, the detection portion of the model was fixed while the occupancy component of the model was selected following similar steps. Since both burn intensity measurements were highly correlated (>= 0.98 Pearson correlation coefficient), we did not allow those variables to coexist in the tested models. We expected non-linear relationships between fire intensity and occupancy, and thus we included both the linear and quadratic parameter of the burn intensity variables. We didn’t use model averaging since even though collinear variables were prohibited to coexist in the same model, these might coexist in the average model (Cade 2015). We projected the resulting occupancy model to the entire National Forest for each species included in this study and the best model for each species was assessed for goodness of fit using a Pearson Chi square statistic (MacKenzie and Bailey 2004). For each bat species, occupancy inside and outside of the fire areas was compared by with a t-test between the fitted values for the sampled points.
+The basketball reference player season finder was used to extract the per 100 team possessions stats, single season, during the three point era (since season 1979-80), during the regular season [@BR_2], and that information was coupled twith the minutes per game played by each player, again extracted from the basketball regerence player season finder but now in the per game stats. We divided that dataset into 37 datasets, one for each season from the 1979-80 season to the 2015-16 season.
+
+For each season,  the per 100 team possesion stats was used to fit a global glm model [@nelder1972generalized] that explains the minutes per game of each player based on the following variables: Two point shot attempts per 100 possessions, two point shot percentage, three point shots attempts per 100 possessions, three point shot percentage, free thow attempts per 100 possessions, free throw percentage, total rebounds per 100 possessions, assists per 100 possessions, steals per 100 possessions, blocks per 100 possessions, turnovers per 100 possessions, points per 100 possessions and effective field goal percentage.
+
+In order to be able to compare the strength of relationship of every variable on the same scale, all of them were scaled and centered [@bro2003centering] using the caret package [@kuhn2013applied].
+
+For each season, we tested variables for collinearity. Then we fitted every possible first order model not allowing models to coexist if they had a pearosn correlation coefficient equal or higher than 0.7 [@dormann2013collinearity]. Then the models were ranked based on Akaike’s Information Criteria for small sample sizes (AICc) [@cavanaugh1997unifying] using the MuMin Package [@barton2013mumin; @burnham2002information]. We didn’t use model averaging since even though collinear variables were prohibited to coexist in the same model, these might coexist in the average model (Cade 2015), thus we selected the best possible model for each season selecting by AICc [@burnham2002information]. All of the analyses using R statistical Software [@team2016r],
+
+## Results
+
+```{r}
+library(knitr)
+kable(NN)
+```
+
+```{r, cache=TRUE}
+BD[,c(7:33)]<- sapply(BD[, c(7:33)], as.character)
+BD[,c(7:33)]<- sapply(BD[, c(7:33)], as.numeric)
+
+colnames(BD) <- gsub("3", "Three", colnames(BD))
+colnames(BD) <- gsub("2", "Two", colnames(BD))
+colnames(BD) <- gsub("%", "pct", colnames(BD))
+
+
+library(ggplot2)
+library(MuMIn)
+library(caret)
+
+BD$ThreePpct[is.na(BD$ThreePpct)] <- 0
+preprocov <- preProcess(BD[,-c(1:9,33)])
+BD[,-c(1:9,33)] <- predict(preprocov, BD[,-c(1:9,33)])
+
+Vars<- BD[,c(13,15,17,20,21,22,23,24,26,28:31)]
+
+#Get lower triangle matrix to subsett without high correlation
+
+
+Models <- list()
+
+options(na.action = "na.fail")
+
+
+for(i in 1:length(unique(BD$Season))){
+  temp <- dplyr::filter(BD, Season == unique(BD$Season)[i])
+  Vars<- BD[,c(13,15,17,20,21,22,23,24,26,28:31)]
+  smat <- abs(cor(Vars)) <= .7
+  smat[!lower.tri(smat)] <- NA
+  Model <- glm(MPG~ TwoPA + ThreePA + FTA+ TRB +  AST + STL + BLK +  TOV + PTS +  TwoPpct + ThreePpct + eFGpct + FTpct, data = temp)
+  Select.Model <- dredge(Model, subset = smat)
+  Best.Model<-get.models(Select.Model, 1)[[1]]
+  Models[[i]] <- data.frame(matrix(summary(Best.Model)$coefficients[,1], ncol = length(summary(Best.Model)$coefficients[,1]), nrow = 1))
+  colnames(Models[[i]]) <- rownames(summary(Best.Model)$coefficients)
+  Models[[i]]$Season <- unique(BD$Season)[i]
+}
+
+Models <- Reduce(function(x,y) merge(x, y, all = TRUE), Models)
+
+Models <- dplyr::arrange(Models, Season)
+
+saveRDS(Models, "Models.rds")
+Models <- readRDS("Models.rds")
+library(reshape2)
+
+Models <- Models[,-1]
+```
+
+As we can see in figure 1, the `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[2])` is the variable that appears in most season being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[2]` of 37 seasons, followed by `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[3])` and `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[4])` being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[3]` and `r sort(colSums(!is.na(Models)), decreasing = TRUE)[4]` seasons respectibely
+
+```{r, fig.cap="Strength of relationship by season"}
+library(reshape2)
+library(ggplot2)
+library(MuMIn)
+library(caret)
+dfm <- melt(Models, id.vars="Season")
+dfm$sign <- ifelse(dfm$value > 0 , "+" , ifelse(dfm$value < 0, "-", ""))
+
+
+p <- ggplot(dfm, aes(x=variable, y=Season)) +  geom_tile(aes(fill=value), colour = "black") + scale_fill_gradient2(low = "blue", high = 'red', name="Strength") + theme_classic() + theme(axis.text.x=element_text(angle=45, margin = margin(0.35, unit = "cm"),vjust =1))
+p
+```
+
+```{r, fig.cap="Strength of relationship by season for assists, Rebounds and points"}
+dfm2 <- dplyr::filter(dfm, variable == "AST" | variable == "TRB" | variable == "PTS")
+
+ggplot(data=dfm2, aes(x=Season, y=abs(value), colour=variable)) +geom_point() + geom_smooth(aes(fill = variable)) + ylab("Strength of relationship") + theme_classic()
+```
 
 #### Functionality
 

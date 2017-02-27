@@ -1,3 +1,10 @@
+@misc{BR_2,
+	title = {Player {Season} {Finder} {\textbar} {Basketball}-{Reference}.com},
+	url = {http://www.basketball-reference.com/play-index/psl_finder.cgi},
+	urldate = {2017-02-27},
+	file = {Player Season Finder | Basketball-Reference.com:/home/derek/.zotero/zotero/b7w3ygs6.default/zotero/storage/XQD3BG7P/psl_finder.html:text/html}
+}
+
 @article{barton2013mumin,
   title={MuMIn: Multi-model inference. R package version 1.9. 13},
   author={Barto{\'n}, Kamil},
@@ -54,4 +61,18 @@
   volume={26},
   year={2013},
   publisher={Springer}
+}
+
+@article{nelder1972generalized,
+  title={Generalized linear models},
+  author={Nelder, John A and Baker, R Jacob},
+  journal={Encyclopedia of statistical sciences},
+  year={1972},
+  publisher={Wiley Online Library}
+}
+
+@misc{team2016r,
+  title={R: a language and environment for statistical computing. R Development Core Team, Vienna},
+  author={Team, R Core},
+  year={2016}
 }

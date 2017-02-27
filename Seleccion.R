@@ -70,7 +70,7 @@ Models <- dplyr::arrange(Models, Season)
 View(Models)
 
 saveRDS(Models, "Models.rds")
-
+Models <- readRDS("Models.rds")
 library(reshape2)
 
 Models <- Models[,-1]
@@ -90,7 +90,7 @@ p
 
 dfm2 <- dplyr::filter(dfm, variable == "AST" | variable == "TRB" | variable == "PTS" | variable == "TOV")
 
-ggplot(data=dfm2, aes(x=Season, y=abs(value), colour=variable)) +geom_point() + geom_smooth(aes(fill = variable))
+ggplot(data=dfm2, aes(x=Season, y=abs(value), colour=variable)) +geom_point() + geom_smooth(aes(fill = variable)) + ylab("Strength of relationship")
 
 
 ###############LImiting Variables
