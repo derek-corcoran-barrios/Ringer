@@ -1,0 +1,52 @@
+---
+title: "Selection"
+author: "Derek Corcoran"
+date: "February 13, 2017"
+output: pdf_document
+---
+
+For many years biologists and evolutionary biologists have been able to measure the direction and strength of natural selection (Lande 1979; Lande and Arnold 1983; Arnold and Wade 1984a, 1984b). To our knowledge this methods have not been applied to measure how coaches and/or general managers reward players. In the case of coaches, arguably, the only way they can reward players is with minutes played each game (minutes per game *MPG*)
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(knitr)
+library(XML)
+library(ggplot2)
+library(dplyr)
+library(lme4)
+library(sjPlot)
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+URL="http://www.basketball-reference.com/play-index/psl_finder.cgi?request=1&match=single&type=per_poss&per_minute_base=36&per_poss_base=100&lg_id=NBA&is_playoffs=N&year_min=1980&year_max=&franch_id=&season_start=1&season_end=-1&age_min=0&age_max=99&shoot_hand=&height_min=0&height_max=99&birth_country_is=Y&birth_country=&birth_state=&college_id=&draft_year=&is_active=&debut_yr_aba_start=&debut_yr_aba_end=&debut_yr_nba_start=&debut_yr_nba_end=&is_hof=&is_as=&as_comp=gt&as_val=&award=&pos_is_g=Y&pos_is_gf=Y&pos_is_f=Y&pos_is_fg=Y&pos_is_fc=Y&pos_is_c=Y&pos_is_cf=Y&qual=&c1stat=&c1comp=&c1val=&c2stat=&c2comp=&c2val=&c3stat=&c3comp=&c3val=&c4stat=&c4comp=&c4val=&c5stat=&c5comp=&c6mult=1.0&c6stat=&order_by=ws&order_by_asc=&offset="
+numerals <- seq(from = 0, to = 7200, by = 100)
+NBAlist <- list()
+for(i in 1:73)
+{
+  URL1= paste(URL, numerals[i], sep = "")
+  tablefromURL = readHTMLTable(URL1)
+  NBAlist[[i]] = tablefromURL[[1]]
+}
+NS = do.call(rbind, NBAlist)
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(dplyr)
+Cols <- c(4,7:33)
+
+for(i in Cols){
+  NS[,i] <- as.numeric(as.character(NS[,i]))
+}
+
+#NS[,4] <- as.numeric(as.character(NS[,4]))
+#NS[,7:33] <- as.numeric(as.character(NS[,7:33]))
+
+colnames(NS)
+summary(NS)
+
+hist(dplyr::filter(NS, Season == "1979-80")[,16])
+
+hist(dplyr::filter(NS, Season == "2015-16")[,16])
+
+```

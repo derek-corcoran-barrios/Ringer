@@ -45,7 +45,6 @@
 \fi
 % use microtype if available
 \IfFileExists{microtype.sty}{\usepackage{microtype}}{}
-\usepackage{longtable}
 \usepackage{graphicx}
 % We will generate all images so they have a width \maxwidth. This means
 % that they will get their normal width if they fit onto the page, but
@@ -98,9 +97,16 @@ to?}
     \address[Another University]{Department, Street, City, State, Zip}
   
   \begin{abstract}
-  Since the NBA adopted the three point line in .
-  
-  It consists of two paragraphs.
+  Since the NBA adopted the three point line in 1979 the league has had
+  several key rule changes (eg hand checking rules, allowing zone defense)
+  that have altered the value of different skill-sets players may have.
+  With the creation of the three point shot, a shot made from behind the
+  arc was worth more, which made long distance shooting more valuable. We
+  explore which stats better explain the minutes per game played in every
+  season. Mostly we see that assist per 100 possessions and points per 100
+  possessions are the two stats have the most explanation for minutes per
+  game played. We notice that since 2009, rebounding per 100 possessions
+  stopped being an important variable selected by coaches
   \end{abstract}
   
  \end{frontmatter}
@@ -108,45 +114,44 @@ to?}
 \emph{Text based on elsarticle sample manuscript, see
 \url{http://www.elsevier.com/author-schemas/latex-instructions\#elsarticle}}
 
-\section{The Elsevier article class}\label{the-elsevier-article-class}
-
-\paragraph{Installation}\label{installation}
-
-If the document class \emph{elsarticle} is not available on your
-computer, you can download and install the system package
-\emph{texlive-publishers} (Linux) or install the LaTeX~package
-\emph{elsarticle} using the package manager of your TeX~installation,
-which is typically TeX~Live or MikTeX.
-
-\paragraph{Usage}\label{usage}
-
-Once the package is properly installed, you can use the document class
-\emph{elsarticle} to create a manuscript. Please make sure that your
-manuscript follows the guidelines in the Guide for Authors of the
-relevant journal. It is not necessary to typeset your manuscript in
-exactly the same way as an article, unless you are submitting to a
-camera-ready copy (CRC) journal.
-
 \subsection{Methods}\label{methods}
 
 The basketball reference player season finder was used to extract the
 per 100 team possessions stats, single season, during the three point
 era (since season 1979-80), during the regular season (``Player Season
 Finder Basketball-Reference.com'' 2017), and that information was
-coupled twith the minutes per game played by each player, again
-extracted from the basketball regerence player season finder but now in
-the per game stats. We divided that dataset into 37 datasets, one for
-each season from the 1979-80 season to the 2015-16 season.
+coupled with the minutes per game played by each player, again extracted
+from the basketball reference player season finder but now in the per
+game stats. We divided that data-set into 37 data-sets, one for each
+season from the 1979-80 season to the 2015-16 season.
 
-For each season, the per 100 team possesion stats was used to fit a
+\subsection{Queries}\label{queries}
+
+\begin{itemize}
+\item
+  For single seasons, played in the NBA/BAA, in the regular season, from
+  1979-80 to 2016-17, played G or G-F, qualified for Minutes Per Game
+  Leaderboard, sorted by descending Win Shares
+\item
+  For single seasons, played in the NBA/BAA, in the regular season, from
+  1979-80 to 2016-17, played F or F-G or F-C, qualified for Minutes Per
+  Game Leaderboard, sorted by descending Win Shares
+\item
+  For single seasons, played in the NBA/BAA, in the regular season, from
+  1979-80 to 2016-17, played C or C-F, qualified for Minutes Per Game
+  Leaderboard, sorted by descending Win Shares
+\end{itemize}
+
+For each season, the per 100 team possession stats was used to fit a
 global glm model (Nelder and Baker 1972) that explains the minutes per
 game of each player based on the following variables: Two point shot
 attempts per 100 possessions, two point shot percentage, three point
 shots attempts per 100 possessions, three point shot percentage, free
-thow attempts per 100 possessions, free throw percentage, total rebounds
-per 100 possessions, assists per 100 possessions, steals per 100
-possessions, blocks per 100 possessions, turnovers per 100 possessions,
-points per 100 possessions and effective field goal percentage.
+throw attempts per 100 possessions, free throw percentage, total
+rebounds per 100 possessions, assists per 100 possessions, steals per
+100 possessions, blocks per 100 possessions, turnovers per 100
+possessions, points per 100 possessions and effective field goal
+percentage.
 
 In order to be able to compare the strength of relationship of every
 variable on the same scale, all of them were scaled and centered (Bro
@@ -154,7 +159,7 @@ and Smilde 2003) using the caret package (Kuhn and Johnson 2013).
 
 For each season, we tested variables for collinearity. Then we fitted
 every possible first order model not allowing models to coexist if they
-had a pearosn correlation coefficient equal or higher than 0.7 (Dormann
+had a Pearson correlation coefficient equal or higher than 0.7 (Dormann
 et al. 2013). Then the models were ranked based on Akaike's Information
 Criteria for small sample sizes (AICc) (Cavanaugh 1997) using the MuMin
 Package (Barto{ń} 2013; Burnham and Anderson 2002). We didn't use model
@@ -166,66 +171,40 @@ R statistical Software (Team 2016),
 
 \subsection{Results}\label{results}
 
-\begin{longtable}[c]{@{}rr@{}}
-\toprule
-Season & number of players\tabularnewline
-\midrule
-\endhead
-1980 & 137\tabularnewline
-1981 & 149\tabularnewline
-1982 & 147\tabularnewline
-1983 & 144\tabularnewline
-1984 & 152\tabularnewline
-1985 & 149\tabularnewline
-1986 & 151\tabularnewline
-1987 & 136\tabularnewline
-1988 & 145\tabularnewline
-1989 & 146\tabularnewline
-1990 & 165\tabularnewline
-1991 & 161\tabularnewline
-1992 & 166\tabularnewline
-1993 & 164\tabularnewline
-1994 & 164\tabularnewline
-1995 & 156\tabularnewline
-1996 & 164\tabularnewline
-1997 & 157\tabularnewline
-1998 & 162\tabularnewline
-1999 & 143\tabularnewline
-2000 & 176\tabularnewline
-2001 & 155\tabularnewline
-2002 & 159\tabularnewline
-2003 & 159\tabularnewline
-2004 & 166\tabularnewline
-2005 & 161\tabularnewline
-2006 & 153\tabularnewline
-2007 & 171\tabularnewline
-2008 & 181\tabularnewline
-2009 & 174\tabularnewline
-2010 & 177\tabularnewline
-2011 & 171\tabularnewline
-2012 & 146\tabularnewline
-2013 & 168\tabularnewline
-2014 & 200\tabularnewline
-2015 & 210\tabularnewline
-2016 & 200\tabularnewline
-\bottomrule
-\end{longtable}
+\subsubsection{Centers}\label{centers}
 
-As we can see in figure 1, the AST is the variable that appears in most
-season being selected in 36 of 37 seasons, followed by PTS and TRB being
-selected in 29 and 25 seasons respectibely
-
-\begin{figure}[htbp]
-\centering
-\includegraphics{Coaching_Selection_files/figure-latex/unnamed-chunk-5-1.pdf}
-\caption{Strength of relationship by season}
-\end{figure}
+As we can see in figure 1, the Season is the variable that appears in
+most seasons being selected in 38 of 37 seasons, followed by TwoPA and
+AST being selected in 19 and 12 seasons respectively
 
 \begin{figure}[htbp]
 \centering
 \includegraphics{Coaching_Selection_files/figure-latex/unnamed-chunk-6-1.pdf}
-\caption{Strength of relationship by season for assists, Rebounds and
-points}
+\caption{Strength of relationship by season for Centers}
+\end{figure}
+
+\subsection{Forwards}\label{forwards}
+
+As we can see in figure 1, the Season is the variable that appears in
+most seasons being selected in 38 of 37 seasons, followed by STL and
+TwoPA being selected in 28 and 22 seasons respectively
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{Coaching_Selection_files/figure-latex/unnamed-chunk-9-1.pdf}
+\caption{Strength of relationship by season for Forwards}
+\end{figure}
+
+\subsection{Guards}\label{guards}
+
+As we can see in figure 1, the TRB is the variable that appears in most
+seasons being selected in 37 of 37 seasons, followed by AST and FTA
+being selected in 34 and 33 seasons respectively
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{Coaching_Selection_files/figure-latex/unnamed-chunk-12-1.pdf}
+\caption{Strength of relationship by season for Guards}
 \end{figure}
 
 \paragraph{Functionality}\label{functionality}

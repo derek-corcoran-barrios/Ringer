@@ -14,9 +14,8 @@ address:
   - code: Another University
     address: Department, Street, City, State, Zip
 abstract: |
-  Since the NBA adopted the three point line in .
+  Since the NBA adopted the three point line in 1979 the league has had several key rule changes (eg hand checking rules, allowing zone defense) that have altered the value of different skill-sets players may have. With the creation of the three point shot, a shot made from behind the arc was worth more, which made long distance shooting more valuable. We explore which stats better explain the minutes per game played in every season. Mostly we see that assist per 100 possessions and points per 100 possessions are the two stats have the most explanation for minutes per game played. We notice that since 2009, rebounding per 100 possessions stopped being an important variable selected by coaches
 
-  It consists of two paragraphs.
 
 bibliography: mybibfile.bib
 output: rticles::elsevier_article
@@ -24,8 +23,6 @@ output: rticles::elsevier_article
 
 _Text based on elsarticle sample manuscript, see [http://www.elsevier.com/author-schemas/latex-instructions#elsarticle](http://www.elsevier.com/author-schemas/latex-instructions#elsarticle)_
 
-The Elsevier article class
-==========================
 
 ```{r, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
@@ -33,91 +30,203 @@ knitr::opts_chunk$set(warning = FALSE)
 knitr::opts_chunk$set(message = FALSE)
 
 ```
-#### Installation
 
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(knitr)
+library(XML)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+```
+
+```{r Guards, echo=FALSE, message=FALSE, warning=FALSE, cache = TRUE}
+URL="http://www.basketball-reference.com/play-index/psl_finder.cgi?request=1&match=single&type=per_game&per_minute_base=36&per_poss_base=100&lg_id=NBA&is_playoffs=N&year_min=1980&year_max=&franch_id=&season_start=1&season_end=-1&age_min=0&age_max=99&shoot_hand=&height_min=0&height_max=99&birth_country_is=Y&birth_country=&birth_state=&college_id=&draft_year=&is_active=&debut_yr_aba_start=&debut_yr_aba_end=&debut_yr_nba_start=&debut_yr_nba_end=&is_hof=&is_as=&as_comp=gt&as_val=&award=&pos_is_g=Y&pos_is_gf=Y&pos_is_f=&pos_is_fg=&pos_is_fc=&pos_is_c=&pos_is_cf=&qual=mp_per_g_req&c1stat=&c1comp=&c1val=&c2stat=&c2comp=&c2val=&c3stat=&c3comp=&c3val=&c4stat=&c4comp=&c4val=&c5stat=&c5comp=&c6mult=1.0&c6stat=&order_by=ws&order_by_asc=&offset="
+
+numerals <- seq(from = 0, to = 3100, by = 100)
+NBAlist <- list()
+for(i in 1:length(numerals))
+{
+  URL1= paste(URL, numerals[i], sep = "")
+  tablefromURL = readHTMLTable(URL1)
+  NBAlist[[i]] = tablefromURL[[1]]
+}
+Guards_per_game <- do.call(rbind, NBAlist)
+
+Guards_per_game <- Guards_per_game[Guards_per_game$Rk != "Rk",]
+
+saveRDS(Guards_per_game, "Guards_per_game.rds")
+
+
+URL="http://www.basketball-reference.com/play-index/psl_finder.cgi?request=1&match=single&type=per_poss&per_minute_base=36&per_poss_base=100&lg_id=NBA&is_playoffs=N&year_min=1980&year_max=&franch_id=&season_start=1&season_end=-1&age_min=0&age_max=99&shoot_hand=&height_min=0&height_max=99&birth_country_is=Y&birth_country=&birth_state=&college_id=&draft_year=&is_active=&debut_yr_aba_start=&debut_yr_aba_end=&debut_yr_nba_start=&debut_yr_nba_end=&is_hof=&is_as=&as_comp=gt&as_val=&award=&pos_is_g=Y&pos_is_gf=Y&pos_is_f=&pos_is_fg=&pos_is_fc=&pos_is_c=&pos_is_cf=&qual=mp_per_g_req&c1stat=&c1comp=&c1val=&c2stat=&c2comp=&c2val=&c3stat=&c3comp=&c3val=&c4stat=&c4comp=&c4val=&c5stat=&c5comp=&c6mult=1.0&c6stat=&order_by=ws&order_by_asc=&offset="
+
+numerals <- seq(from = 0, to = 3100, by = 100)
+NBAlist <- list()
+for(i in 1:length(numerals))
+{
+  URL1= paste(URL, numerals[i], sep = "")
+  tablefromURL = readHTMLTable(URL1)
+  NBAlist[[i]] = tablefromURL[[1]]
+}
+Guards_per_hundred = do.call(rbind, NBAlist)
+
+Guards_per_hundred <- Guards_per_hundred[Guards_per_hundred$Rk != "Rk",]
+
+saveRDS(Guards_per_hundred, "Guards_per_hundred.rds")
+Guards_total <- merge(Guards_per_hundred, Guards_per_game, all = TRUE)
+Guards_total$Season <- (as.numeric(gsub("\\-.*","",Guards_total$Season)) + 1)
+
+Guards_total <- merge(Guards_per_hundred, Guards_per_game, all = TRUE)
+
+colnames(Guards_total) <- gsub("3", "Three", colnames(Guards_total))
+colnames(Guards_total) <- gsub("2", "Two", colnames(Guards_total))
+colnames(Guards_total) <- gsub("%", "pct", colnames(Guards_total))
+
+Guards_total[,c(4,7:33)]<- sapply(Guards_total[, c(4,7:33)], as.character)
+Guards_total[,c(4,7:33)]<- sapply(Guards_total[, c(4,7:33)], as.numeric)
+saveRDS(Guards_total, "Guards_total.rds")
+
+```
 
 ```{r, cache=TRUE}
 
-setwd("/home/derek/Documents/TheRinger")
-BD <- readRDS("big_data.rds")
-setwd("/home/derek/Documents/TheRinger/Coaching_Selection")
-
-BD <- BD[complete.cases(BD),]
-BD <- BD[,-1]
-BD$MPG <- as.numeric(as.character(BD$MP))/as.numeric(as.character(BD$G))
-
-BD <- BD[,c(1,2,3,4,30)]
-
-
-#Data of stats per 100 possessions
-setwd("/home/derek/Documents/TheRinger")
-NS <- readRDS("NS.rds")
-setwd("/home/derek/Documents/TheRinger/Coaching_Selection")
-NS <- NS[complete.cases(NS),]
-NS <- NS[,-1]
-
-#Merge by player and season
-
-BD <- merge(NS, BD, all = TRUE)
-
-BD <- BD[complete.cases(BD),]
-
-
-BD$Season <- (as.numeric(gsub("\\-.*","",BD$Season)) + 1)
-
-NN <- dplyr::group_by(BD, Season)
-NN <- dplyr::summarise(NN, 'number of players' = n())
+#NN <- dplyr::group_by(Centers_total, Season)
+#NN <- dplyr::summarise(NN, 'number of players' = n())
 ```
 
-If the document class *elsarticle* is not available on your computer,
-you can download and install the system package *texlive-publishers*
-(Linux) or install the LaTeX package *elsarticle* using the package
-manager of your TeX installation, which is typically TeX Live or MikTeX.
+```{r Forwards, echo=FALSE, message=FALSE, warning=FALSE, cache = TRUE}
+URL="http://www.basketball-reference.com/play-index/psl_finder.cgi?request=1&match=single&type=per_game&per_minute_base=36&per_poss_base=100&lg_id=NBA&is_playoffs=N&year_min=1980&year_max=&franch_id=&season_start=1&season_end=-1&age_min=0&age_max=99&shoot_hand=&height_min=0&height_max=99&birth_country_is=Y&birth_country=&birth_state=&college_id=&draft_year=&is_active=&debut_yr_aba_start=&debut_yr_aba_end=&debut_yr_nba_start=&debut_yr_nba_end=&is_hof=&is_as=&as_comp=gt&as_val=&award=&pos_is_g=&pos_is_gf=&pos_is_f=Y&pos_is_fg=Y&pos_is_fc=Y&pos_is_c=&pos_is_cf=&qual=mp_per_g_req&c1stat=&c1comp=&c1val=&c2stat=&c2comp=&c2val=&c3stat=&c3comp=&c3val=&c4stat=&c4comp=&c4val=&c5stat=&c5comp=&c6mult=1.0&c6stat=&order_by=ws&order_by_asc=&offset="
 
-#### Usage
+numerals <- seq(from = 0, to = 3100, by = 100)
+NBAlist <- list()
+for(i in 1:length(numerals))
+{
+  URL1= paste(URL, numerals[i], sep = "")
+  tablefromURL = readHTMLTable(URL1)
+  NBAlist[[i]] = tablefromURL[[1]]
+}
+Forwards_per_game <- do.call(rbind, NBAlist)
 
-Once the package is properly installed, you can use the document class
-*elsarticle* to create a manuscript. Please make sure that your
-manuscript follows the guidelines in the Guide for Authors of the
-relevant journal. It is not necessary to typeset your manuscript in
-exactly the same way as an article, unless you are submitting to a
-camera-ready copy (CRC) journal.
+Forwards_per_game <- Forwards_per_game[Forwards_per_game$Rk != "Rk",]
+
+saveRDS(Forwards_per_game, "Forwards_per_game.rds")
+
+
+URL="http://www.basketball-reference.com/play-index/psl_finder.cgi?request=1&match=single&type=per_poss&per_minute_base=36&per_poss_base=100&lg_id=NBA&is_playoffs=N&year_min=1980&year_max=&franch_id=&season_start=1&season_end=-1&age_min=0&age_max=99&shoot_hand=&height_min=0&height_max=99&birth_country_is=Y&birth_country=&birth_state=&college_id=&draft_year=&is_active=&debut_yr_aba_start=&debut_yr_aba_end=&debut_yr_nba_start=&debut_yr_nba_end=&is_hof=&is_as=&as_comp=gt&as_val=&award=&pos_is_g=&pos_is_gf=&pos_is_f=Y&pos_is_fg=Y&pos_is_fc=Y&pos_is_c=&pos_is_cf=&qual=mp_per_g_req&c1stat=&c1comp=&c1val=&c2stat=&c2comp=&c2val=&c3stat=&c3comp=&c3val=&c4stat=&c4comp=&c4val=&c5stat=&c5comp=&c6mult=1.0&c6stat=&order_by=ws&order_by_asc=&offset="
+
+numerals <- seq(from = 0, to = 3100, by = 100)
+NBAlist <- list()
+for(i in 1:length(numerals))
+{
+  URL1= paste(URL, numerals[i], sep = "")
+  tablefromURL = readHTMLTable(URL1)
+  NBAlist[[i]] = tablefromURL[[1]]
+}
+Forwards_per_hundred = do.call(rbind, NBAlist)
+
+Forwards_per_hundred <- Forwards_per_hundred[Forwards_per_hundred$Rk != "Rk",]
+
+saveRDS(Forwards_per_hundred, "Forwards_per_hundred.rds")
+Forwards_total <- merge(Forwards_per_hundred, Forwards_per_game, all = TRUE)
+Forwards_total$Season <- (as.numeric(gsub("\\-.*","",Forwards_total$Season)) + 1)
+
+Forwards_total <- merge(Forwards_per_hundred, Forwards_per_game, all = TRUE)
+
+colnames(Forwards_total) <- gsub("3", "Three", colnames(Forwards_total))
+colnames(Forwards_total) <- gsub("2", "Two", colnames(Forwards_total))
+colnames(Forwards_total) <- gsub("%", "pct", colnames(Forwards_total))
+
+Forwards_total[,c(4,7:33)]<- sapply(Forwards_total[, c(4,7:33)], as.character)
+Forwards_total[,c(4,7:33)]<- sapply(Forwards_total[, c(4,7:33)], as.numeric)
+saveRDS(Forwards_total, "Forwards_total.rds")
+
+```
+
+```{r Centers, echo=FALSE, message=FALSE, warning=FALSE, cache = TRUE}
+URL="http://www.basketball-reference.com/play-index/psl_finder.cgi?request=1&match=single&type=per_game&per_minute_base=36&per_poss_base=100&lg_id=NBA&is_playoffs=N&year_min=1980&year_max=&franch_id=&season_start=1&season_end=-1&age_min=0&age_max=99&shoot_hand=&height_min=0&height_max=99&birth_country_is=Y&birth_country=&birth_state=&college_id=&draft_year=&is_active=&debut_yr_aba_start=&debut_yr_aba_end=&debut_yr_nba_start=&debut_yr_nba_end=&is_hof=&is_as=&as_comp=gt&as_val=&award=&pos_is_g=&pos_is_gf=&pos_is_f=&pos_is_fg=&pos_is_fc=&pos_is_c=Y&pos_is_cf=Y&qual=mp_per_g_req&c1stat=&c1comp=&c1val=&c2stat=&c2comp=&c2val=&c3stat=&c3comp=&c3val=&c4stat=&c4comp=&c4val=&c5stat=&c5comp=&c6mult=1.0&c6stat=&order_by=ws&order_by_asc=&offset="
+
+numerals <- seq(from = 0, to = 1200, by = 100)
+NBAlist <- list()
+for(i in 1:length(numerals))
+{
+  URL1= paste(URL, numerals[i], sep = "")
+  tablefromURL = readHTMLTable(URL1)
+  NBAlist[[i]] = tablefromURL[[1]]
+}
+Centers_per_game <- do.call(rbind, NBAlist)
+
+Centers_per_game <- Centers_per_game[Centers_per_game$Rk != "Rk",]
+
+saveRDS(Centers_per_game, "Centers_per_game.rds")
+
+
+URL="http://www.basketball-reference.com/play-index/psl_finder.cgi?request=1&match=single&type=per_poss&per_minute_base=36&per_poss_base=100&lg_id=NBA&is_playoffs=N&year_min=1980&year_max=&franch_id=&season_start=1&season_end=-1&age_min=0&age_max=99&shoot_hand=&height_min=0&height_max=99&birth_country_is=Y&birth_country=&birth_state=&college_id=&draft_year=&is_active=&debut_yr_aba_start=&debut_yr_aba_end=&debut_yr_nba_start=&debut_yr_nba_end=&is_hof=&is_as=&as_comp=gt&as_val=&award=&pos_is_g=&pos_is_gf=&pos_is_f=&pos_is_fg=&pos_is_fc=&pos_is_c=Y&pos_is_cf=Y&qual=mp_per_g_req&c1stat=&c1comp=&c1val=&c2stat=&c2comp=&c2val=&c3stat=&c3comp=&c3val=&c4stat=&c4comp=&c4val=&c5stat=&c5comp=&c6mult=1.0&c6stat=&order_by=ws&order_by_asc=&offset="
+
+numerals <- seq(from = 0, to = 1200, by = 100)
+NBAlist <- list()
+for(i in 1:length(numerals))
+{
+  URL1= paste(URL, numerals[i], sep = "")
+  tablefromURL = readHTMLTable(URL1)
+  NBAlist[[i]] = tablefromURL[[1]]
+}
+Centers_per_hundred = do.call(rbind, NBAlist)
+
+Centers_per_hundred <- Centers_per_hundred[Centers_per_hundred$Rk != "Rk",]
+
+saveRDS(Centers_per_hundred, "Centers_per_hundred.rds")
+Centers_total <- merge(Centers_per_hundred, Centers_per_game, all = TRUE)
+Centers_total$Season <- (as.numeric(gsub("\\-.*","",Centers_total$Season)) + 1)
+
+Centers_total <- merge(Centers_per_hundred, Centers_per_game, all = TRUE)
+
+colnames(Centers_total) <- gsub("3", "Three", colnames(Centers_total))
+colnames(Centers_total) <- gsub("2", "Two", colnames(Centers_total))
+colnames(Centers_total) <- gsub("%", "pct", colnames(Centers_total))
+
+Centers_total[,c(4,7:33)]<- sapply(Centers_total[, c(4,7:33)], as.character)
+Centers_total[,c(4,7:33)]<- sapply(Centers_total[, c(4,7:33)], as.numeric)
+saveRDS(Centers_total, "Centers_total.rds")
+
+```
 
 ## Methods
 
-The basketball reference player season finder was used to extract the per 100 team possessions stats, single season, during the three point era (since season 1979-80), during the regular season [@BR_2], and that information was coupled twith the minutes per game played by each player, again extracted from the basketball regerence player season finder but now in the per game stats. We divided that dataset into 37 datasets, one for each season from the 1979-80 season to the 2015-16 season.
+The basketball reference player season finder was used to extract the per 100 team possessions stats, single season, during the three point era (since season 1979-80), during the regular season [@BR_2], and that information was coupled with the minutes per game played by each player, again extracted from the basketball reference player season finder but now in the per game stats. We divided that data-set into 37 data-sets, one for each season from the 1979-80 season to the 2015-16 season.
 
-For each season,  the per 100 team possesion stats was used to fit a global glm model [@nelder1972generalized] that explains the minutes per game of each player based on the following variables: Two point shot attempts per 100 possessions, two point shot percentage, three point shots attempts per 100 possessions, three point shot percentage, free thow attempts per 100 possessions, free throw percentage, total rebounds per 100 possessions, assists per 100 possessions, steals per 100 possessions, blocks per 100 possessions, turnovers per 100 possessions, points per 100 possessions and effective field goal percentage.
+## Queries
+
+- For single seasons, played in the NBA/BAA, in the regular season, from 1979-80 to 2016-17, played G or G-F, qualified for Minutes Per Game Leaderboard, sorted by descending Win Shares
+
+- For single seasons, played in the NBA/BAA, in the regular season, from 1979-80 to 2016-17, played F or F-G or F-C, qualified for Minutes Per Game Leaderboard, sorted by descending Win Shares
+
+- For single seasons, played in the NBA/BAA, in the regular season, from 1979-80 to 2016-17, played C or C-F, qualified for Minutes Per Game Leaderboard, sorted by descending Win Shares
+
+For each season,  the per 100 team possession stats was used to fit a global glm model [@nelder1972generalized] that explains the minutes per game of each player based on the following variables: Two point shot attempts per 100 possessions, two point shot percentage, three point shots attempts per 100 possessions, three point shot percentage, free throw attempts per 100 possessions, free throw percentage, total rebounds per 100 possessions, assists per 100 possessions, steals per 100 possessions, blocks per 100 possessions, turnovers per 100 possessions, points per 100 possessions and effective field goal percentage.
 
 In order to be able to compare the strength of relationship of every variable on the same scale, all of them were scaled and centered [@bro2003centering] using the caret package [@kuhn2013applied].
 
-For each season, we tested variables for collinearity. Then we fitted every possible first order model not allowing models to coexist if they had a pearosn correlation coefficient equal or higher than 0.7 [@dormann2013collinearity]. Then the models were ranked based on Akaike’s Information Criteria for small sample sizes (AICc) [@cavanaugh1997unifying] using the MuMin Package [@barton2013mumin; @burnham2002information]. We didn’t use model averaging since even though collinear variables were prohibited to coexist in the same model, these might coexist in the average model (Cade 2015), thus we selected the best possible model for each season selecting by AICc [@burnham2002information]. All of the analyses using R statistical Software [@team2016r],
+For each season, we tested variables for collinearity. Then we fitted every possible first order model not allowing models to coexist if they had a Pearson correlation coefficient equal or higher than 0.7 [@dormann2013collinearity]. Then the models were ranked based on Akaike’s Information Criteria for small sample sizes (AICc) [@cavanaugh1997unifying] using the MuMin Package [@barton2013mumin; @burnham2002information]. We didn’t use model averaging since even though collinear variables were prohibited to coexist in the same model, these might coexist in the average model (Cade 2015), thus we selected the best possible model for each season selecting by AICc [@burnham2002information]. All of the analyses using R statistical Software [@team2016r],
 
 ## Results
 
 ```{r}
 library(knitr)
-kable(NN)
 ```
 
+### Centers
+
 ```{r, cache=TRUE}
-BD[,c(7:33)]<- sapply(BD[, c(7:33)], as.character)
-BD[,c(7:33)]<- sapply(BD[, c(7:33)], as.numeric)
-
-colnames(BD) <- gsub("3", "Three", colnames(BD))
-colnames(BD) <- gsub("2", "Two", colnames(BD))
-colnames(BD) <- gsub("%", "pct", colnames(BD))
-
-
 library(ggplot2)
 library(MuMIn)
 library(caret)
 
-BD$ThreePpct[is.na(BD$ThreePpct)] <- 0
-preprocov <- preProcess(BD[,-c(1:9,33)])
-BD[,-c(1:9,33)] <- predict(preprocov, BD[,-c(1:9,33)])
+Centers_total$ThreePpct[is.na(Centers_total$ThreePpct)] <- 0
+preprocov <- preProcess(Centers_total[,-c(1:9,33)])
+Centers_total[,-c(1:9,33)] <- predict(preprocov, Centers_total[,-c(1:9,33)])
 
-Vars<- BD[,c(13,15,17,20,21,22,23,24,26,28:31)]
+Vars<- Centers_total[,c(13,15,17,20,21,22,23,24,26,28:31)]
 
 #Get lower triangle matrix to subsett without high correlation
 
@@ -127,17 +236,17 @@ Models <- list()
 options(na.action = "na.fail")
 
 
-for(i in 1:length(unique(BD$Season))){
-  temp <- dplyr::filter(BD, Season == unique(BD$Season)[i])
-  Vars<- BD[,c(13,15,17,20,21,22,23,24,26,28:31)]
+for(i in 1:length(unique(Centers_total$Season))){
+  temp <- dplyr::filter(Centers_total, Season == unique(Centers_total$Season)[i])
+  Vars<- Centers_total[,c(13,15,17,20,21,22,23,24,26,28:31)]
   smat <- abs(cor(Vars)) <= .7
   smat[!lower.tri(smat)] <- NA
-  Model <- glm(MPG~ TwoPA + ThreePA + FTA+ TRB +  AST + STL + BLK +  TOV + PTS +  TwoPpct + ThreePpct + eFGpct + FTpct, data = temp)
+  Model <- glm(MP~ TwoPA + ThreePA + FTA+ TRB +  AST + STL + BLK +  TOV + PTS +  TwoPpct + ThreePpct + eFGpct + FTpct, data = temp)
   Select.Model <- dredge(Model, subset = smat)
   Best.Model<-get.models(Select.Model, 1)[[1]]
   Models[[i]] <- data.frame(matrix(summary(Best.Model)$coefficients[,1], ncol = length(summary(Best.Model)$coefficients[,1]), nrow = 1))
   colnames(Models[[i]]) <- rownames(summary(Best.Model)$coefficients)
-  Models[[i]]$Season <- unique(BD$Season)[i]
+  Models[[i]]$Season <- unique(Centers_total$Season)[i]
 }
 
 Models <- Reduce(function(x,y) merge(x, y, all = TRUE), Models)
@@ -151,9 +260,9 @@ library(reshape2)
 Models <- Models[,-1]
 ```
 
-As we can see in figure 1, the `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[2])` is the variable that appears in most season being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[2]` of 37 seasons, followed by `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[3])` and `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[4])` being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[3]` and `r sort(colSums(!is.na(Models)), decreasing = TRUE)[4]` seasons respectibely
+As we can see in figure 1, the `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[2])` is the variable that appears in most seasons being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[2]` of 37 seasons, followed by `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[3])` and `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[4])` being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[3]` and `r sort(colSums(!is.na(Models)), decreasing = TRUE)[4]` seasons respectively
 
-```{r, fig.cap="Strength of relationship by season"}
+```{r, fig.cap="Strength of relationship by season for Centers"}
 library(reshape2)
 library(ggplot2)
 library(MuMIn)
@@ -162,14 +271,146 @@ dfm <- melt(Models, id.vars="Season")
 dfm$sign <- ifelse(dfm$value > 0 , "+" , ifelse(dfm$value < 0, "-", ""))
 
 
-p <- ggplot(dfm, aes(x=variable, y=Season)) +  geom_tile(aes(fill=value), colour = "black") + scale_fill_gradient2(low = "blue", high = 'red', name="Strength") + theme_classic() + theme(axis.text.x=element_text(angle=45, margin = margin(0.35, unit = "cm"),vjust =1))
-p
+C <- ggplot(dfm, aes(x=variable, y=Season)) +  geom_tile(aes(fill=value), colour = "black") + scale_fill_gradient2(low = "blue", high = 'red', name="Strength") + theme_classic() + theme(axis.text.x=element_text(angle=45, margin = margin(0.35, unit = "cm"),vjust =1))
+C
 ```
 
 ```{r, fig.cap="Strength of relationship by season for assists, Rebounds and points"}
-dfm2 <- dplyr::filter(dfm, variable == "AST" | variable == "TRB" | variable == "PTS")
+#dfm2 <- dplyr::filter(dfm, variable == "AST" | variable == "TRB" | variable == "PTS")
 
-ggplot(data=dfm2, aes(x=Season, y=abs(value), colour=variable)) +geom_point() + geom_smooth(aes(fill = variable)) + ylab("Strength of relationship") + theme_classic()
+#ggplot(data=dfm2, aes(x=Season, y=abs(value), colour=variable)) +geom_point() + geom_smooth(aes(fill = variable)) + ylab("Strength of relationship") + theme_classic()
+```
+
+## Forwards
+
+```{r, cache=TRUE}
+library(ggplot2)
+library(MuMIn)
+library(caret)
+
+Forwards_total$ThreePpct[is.na(Forwards_total$ThreePpct)] <- 0
+preprocov <- preProcess(Forwards_total[,-c(1:9,33)])
+Forwards_total[,-c(1:9,33)] <- predict(preprocov, Forwards_total[,-c(1:9,33)])
+
+Vars<- Forwards_total[,c(13,15,17,20,21,22,23,24,26,28:31)]
+
+#Get lower triangle matrix to subsett without high correlation
+
+
+Models <- list()
+
+options(na.action = "na.fail")
+
+
+for(i in 1:length(unique(Forwards_total$Season))){
+  temp <- dplyr::filter(Forwards_total, Season == unique(Forwards_total$Season)[i])
+  Vars<- Forwards_total[,c(13,15,17,20,21,22,23,24,26,28:31)]
+  smat <- abs(cor(Vars)) <= .7
+  smat[!lower.tri(smat)] <- NA
+  Model <- glm(MP~ TwoPA + ThreePA + FTA+ TRB +  AST + STL + BLK +  TOV + PTS +  TwoPpct + ThreePpct + eFGpct + FTpct, data = temp)
+  Select.Model <- dredge(Model, subset = smat)
+  Best.Model<-get.models(Select.Model, 1)[[1]]
+  Models[[i]] <- data.frame(matrix(summary(Best.Model)$coefficients[,1], ncol = length(summary(Best.Model)$coefficients[,1]), nrow = 1))
+  colnames(Models[[i]]) <- rownames(summary(Best.Model)$coefficients)
+  Models[[i]]$Season <- unique(Forwards_total$Season)[i]
+}
+
+Models <- Reduce(function(x,y) merge(x, y, all = TRUE), Models)
+
+Models <- dplyr::arrange(Models, Season)
+
+saveRDS(Models, "Models.rds")
+Models <- readRDS("Models.rds")
+library(reshape2)
+
+Models <- Models[,-1]
+```
+
+As we can see in figure 1, the `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[2])` is the variable that appears in most seasons being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[2]` of 37 seasons, followed by `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[3])` and `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[4])` being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[3]` and `r sort(colSums(!is.na(Models)), decreasing = TRUE)[4]` seasons respectively
+
+```{r, fig.cap="Strength of relationship by season for Forwards"}
+library(reshape2)
+library(ggplot2)
+library(MuMIn)
+library(caret)
+dfm <- melt(Models, id.vars="Season")
+dfm$sign <- ifelse(dfm$value > 0 , "+" , ifelse(dfm$value < 0, "-", ""))
+
+
+Fr <- ggplot(dfm, aes(x=variable, y=Season)) +  geom_tile(aes(fill=value), colour = "black") + scale_fill_gradient2(low = "blue", high = 'red', name="Strength") + theme_classic() + theme(axis.text.x=element_text(angle=45, margin = margin(0.35, unit = "cm"),vjust =1))
+Fr
+```
+
+```{r, fig.cap="Strength of relationship by season for assists, Rebounds and points"}
+#dfm2 <- dplyr::filter(dfm, variable == "AST" | variable == "TRB" | variable == "PTS")
+
+#ggplot(data=dfm2, aes(x=Season, y=abs(value), colour=variable)) +geom_point() + geom_smooth(aes(fill = variable)) + ylab("Strength of relationship") + theme_classic()
+```
+
+## Guards
+
+```{r, cache=TRUE}
+library(ggplot2)
+library(MuMIn)
+library(caret)
+
+Guards_total$ThreePpct[is.na(Guards_total$ThreePpct)] <- 0
+preprocov <- preProcess(Guards_total[,-c(1:9,33)])
+Guards_total[,-c(1:9,33)] <- predict(preprocov, Guards_total[,-c(1:9,33)])
+
+Vars<- Guards_total[,c(13,15,17,20,21,22,23,24,26,28:31)]
+
+#Get lower triangle matrix to subsett without high correlation
+
+
+Models <- list()
+
+options(na.action = "na.fail")
+
+
+for(i in 1:length(unique(Guards_total$Season))){
+  temp <- dplyr::filter(Guards_total, Season == unique(Guards_total$Season)[i])
+  Vars<- Guards_total[,c(13,15,17,20,21,22,23,24,26,28:31)]
+  smat <- abs(cor(Vars)) <= .7
+  smat[!lower.tri(smat)] <- NA
+  Model <- glm(MP~ TwoPA + ThreePA + FTA+ TRB +  AST + STL + BLK +  TOV + PTS +  TwoPpct + ThreePpct + eFGpct + FTpct, data = temp)
+  Select.Model <- dredge(Model, subset = smat)
+  Best.Model<-get.models(Select.Model, 1)[[1]]
+  Models[[i]] <- data.frame(matrix(summary(Best.Model)$coefficients[,1], ncol = length(summary(Best.Model)$coefficients[,1]), nrow = 1))
+  colnames(Models[[i]]) <- rownames(summary(Best.Model)$coefficients)
+  Models[[i]]$Season <- unique(Guards_total$Season)[i]
+}
+
+Models <- Reduce(function(x,y) merge(x, y, all = TRUE), Models)
+
+Models <- dplyr::arrange(Models, Season)
+
+saveRDS(Models, "Models.rds")
+Models <- readRDS("Models.rds")
+library(reshape2)
+
+Models <- Models[,-1]
+```
+
+As we can see in figure 1, the `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[2])` is the variable that appears in most seasons being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[2]` of 37 seasons, followed by `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[3])` and `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[4])` being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[3]` and `r sort(colSums(!is.na(Models)), decreasing = TRUE)[4]` seasons respectively
+
+```{r, fig.cap="Strength of relationship by season for Guards"}
+library(reshape2)
+library(ggplot2)
+library(MuMIn)
+library(caret)
+dfm <- melt(Models, id.vars="Season")
+dfm$sign <- ifelse(dfm$value > 0 , "+" , ifelse(dfm$value < 0, "-", ""))
+
+
+G <- ggplot(dfm, aes(x=variable, y=Season)) +  geom_tile(aes(fill=value), colour = "black") + scale_fill_gradient2(low = "blue", high = 'red', name="Strength") + theme_classic() + theme(axis.text.x=element_text(angle=45, margin = margin(0.35, unit = "cm"),vjust =1))
+G
+```
+
+```{r, fig.cap="Strength of relationship by season for assists, Rebounds and points"}
+#dfm2 <- dplyr::filter(dfm, variable == "AST" | variable == "TRB" | variable == "PTS")
+
+#ggplot(data=dfm2, aes(x=Season, y=abs(value), colour=variable)) +geom_point() + geom_smooth(aes(fill = variable)) + ylab("Strength of relationship") + theme_classic()
 ```
 
 #### Functionality
