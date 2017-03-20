@@ -276,9 +276,10 @@ C
 ```
 
 ```{r, fig.cap="Strength of relationship by season for assists, Rebounds and points"}
-#dfm2 <- dplyr::filter(dfm, variable == "AST" | variable == "TRB" | variable == "PTS")
+dfm2 <- dplyr::filter(dfm, variable == "AST" | variable == "TRB" | variable == "PTS" |  variable == "TwoPA")
+dfm2$Season <- (as.numeric(gsub("\\-.*","",dfm2$Season)) + 1)
 
-#ggplot(data=dfm2, aes(x=Season, y=abs(value), colour=variable)) +geom_point() + geom_smooth(aes(fill = variable)) + ylab("Strength of relationship") + theme_classic()
+ggplot(data=dfm2, aes(x=Season, y=abs(value), colour=variable)) +geom_point() + geom_smooth(method = "lm", aes(fill = variable)) + ylab("Strength of relationship") + theme_classic()
 ```
 
 ## Forwards
@@ -342,9 +343,10 @@ Fr
 ```
 
 ```{r, fig.cap="Strength of relationship by season for assists, Rebounds and points"}
-#dfm2 <- dplyr::filter(dfm, variable == "AST" | variable == "TRB" | variable == "PTS")
+dfm2 <- dplyr::filter(dfm, variable == "AST" | variable == "TRB" | variable == "STL" | variable == "PTS")
+dfm2$Season <- (as.numeric(gsub("\\-.*","",dfm2$Season)) + 1)
 
-#ggplot(data=dfm2, aes(x=Season, y=abs(value), colour=variable)) +geom_point() + geom_smooth(aes(fill = variable)) + ylab("Strength of relationship") + theme_classic()
+ggplot(data=dfm2, aes(x=Season, y=abs(value), colour=variable)) +geom_point() + geom_smooth(method = "lm", aes(fill = variable)) + ylab("Strength of relationship") + theme_classic()
 ```
 
 ## Guards
@@ -408,9 +410,10 @@ G
 ```
 
 ```{r, fig.cap="Strength of relationship by season for assists, Rebounds and points"}
-#dfm2 <- dplyr::filter(dfm, variable == "AST" | variable == "TRB" | variable == "PTS")
+dfm2 <- dplyr::filter(dfm, variable == "AST" | variable == "TRB" | variable == "PTS")
+dfm2$Season <- (as.numeric(gsub("\\-.*","",dfm2$Season)) + 1)
 
-#ggplot(data=dfm2, aes(x=Season, y=abs(value), colour=variable)) +geom_point() + geom_smooth(aes(fill = variable)) + ylab("Strength of relationship") + theme_classic()
+ggplot(data=dfm2, aes(x=Season, y=abs(value), colour=variable)) +geom_point() + geom_smooth(method = "lm", aes(fill = variable)) + ylab("Strength of relationship") + theme_classic()
 ```
 
 #### Functionality
