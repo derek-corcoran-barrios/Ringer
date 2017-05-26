@@ -193,7 +193,7 @@ saveRDS(Centers_total, "Centers_total.rds")
 
 ## Methods
 
-The basketball reference player season finder was used to extract the per 100 team possessions stats, single season, during the three point era (since season 1979-80), during the regular season [@BR_2], and that information was coupled with the minutes per game played by each player, again extracted from the basketball reference player season finder but now in the per game stats. We divided that data-set into 37 data-sets, one for each season from the 1979-80 season to the 2015-16 season.
+The basketball reference player season finder was used to extract the per 100 team possessions stats, single season, during the three point era (since season 1979-80), during the regular season [@BR_2], and that information was coupled with the minutes per game played by each player, again extracted from the basketball reference player season finder but now in the per game stats. We divided that data-set into 37 data-sets, one for each season from the 1979-80 season to the 2016-17 season.
 
 ## Queries
 
@@ -262,7 +262,11 @@ library(reshape2)
 Models <- Models[,-1]
 ```
 
-As we can see in figure 1, the `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[2])` is the variable that appears in most seasons being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[2]` of 37 seasons, followed by `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[3])` and `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[4])` being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[3]` and `r sort(colSums(!is.na(Models)), decreasing = TRUE)[4]` seasons respectively
+As we can see in figure 2, the `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[1])` per hundred possessions is the variable that appears in most seasons being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[1]` of 38 seasons, followed by `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[3])` per hundred possessions and `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[4])` per hundred possessions being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[3]` and `r sort(colSums(!is.na(Models)), decreasing = TRUE)[4]` seasons respectively. 
+
+This doesn't hold true for every decade (Figure 1). Specifically, two point attempts per hundred possessions (TwoPA), where selected in most seasons (second overall), in the 80s, 90s and 2000s, but in the 2010s, they go down to the 6th position on times it was selected, with Points per hundred possessions (pts) takink its place as the second variable being selected in most seasons only behind Total rebounds per hundred possessions. Also notably in thee of the last four seasons, Three point attempts per hundred possessions, was important in determining the minutes per game a center plays. Even when a variable is selected, that does not mean is the variable that has the mos strength in a given year, as an example, if we look at figures 2 and 3, even when Total rebound per hundred possessions has been selevted for every season in the NBA, the strength of the relationship of rebounds with minutes per games is weaker by the year, the same goes for assists. On the other hand, two point attempts per hundred possessions was selected less times this decade than any other decade. But when its selected is very strongly selected.
+
+
 
 ```{r, fig.cap="Times a variable was selected by decade for Centers"}
 library(reshape2)
@@ -340,8 +344,8 @@ C <- ggplot(dfm, aes(x=variable, y=Season)) +  geom_tile(aes(fill=value), colour
 C
 ```
 
-```{r, fig.cap="Strength of relationship by season for assists, Rebounds and points"}
-dfm2 <- dplyr::filter(dfm, variable == "AST" | variable == "TRB" | variable == "PTS" |  variable == "TwoPA")
+```{r, fig.cap="Strength of relationship by season for assists, Rebounds and two point attempts per hundred possessions for centers"}
+dfm2 <- dplyr::filter(dfm, variable == "AST" | variable == "TRB" | variable == "TwoPA" )
 
 ggplot(data=dfm2, aes(x=Season, y=abs(value), colour=variable)) +geom_point() + geom_smooth(method = "lm", aes(fill = variable)) + ylab("Strength of relationship") + theme_classic()
 ```
@@ -391,7 +395,12 @@ library(reshape2)
 Models <- Models[,-1]
 ```
 
-As we can see in figure 1, the `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[2])` is the variable that appears in most seasons being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[2]` of 37 seasons, followed by `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[3])` and `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[4])` being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[3]` and `r sort(colSums(!is.na(Models)), decreasing = TRUE)[4]` seasons respectively
+As we can see in figure 5, the `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[1])` per hundred possessions is the variable that appears in most seasons being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[1]` of 38 seasons, followed by `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[3])` per hundred possessions and `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[4])`per hundred possessions being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[3]` and `r sort(colSums(!is.na(Models)), decreasing = TRUE)[4]` seasons respectively.
+
+In this case most notably the change for decades is mostly the Three point attempts per hundred possessions were chosen in 7 of the last 8 seasons (Figures 4 and 5).
+
+Just as in centers, the total rebounds per hundred possessions have been less and less important for Frowards to gain minutes per game.
+
 
 ```{r, fig.cap="Times a variable was selected by decade for Forwards"}
 library(reshape2)
@@ -441,7 +450,7 @@ dfm$Season <- (as.numeric(gsub("\\-.*","",dfm$Season)) + 1)
                                        levels=names(sort(table(variable), 
                                                          decreasing=TRUE))))
  
- K2 <- ggplot(K2, aes(x = variable)) + geom_bar() + theme_classic() + ggtitle("2000s")+ theme(axis.text.x = element_text(angle = 90, hjust = 1))
+ K2 <- ggplot(K2, aes(x = variable)) + geom_bar() + theme_classic() + ggtitle("2000s") + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 
  
@@ -454,8 +463,7 @@ dfm$Season <- (as.numeric(gsub("\\-.*","",dfm$Season)) + 1)
                                  levels=names(sort(table(variable), 
                                                    decreasing=TRUE))))
  
- Tens <-ggplot(Tens, aes(x = variable)) + geom_bar() + theme_classic() + ggtitle("2010s")
-+ theme(axis.text.x = element_text(angle = 90, hjust = 1))
+ Tens <-ggplot(Tens, aes(x = variable)) + geom_bar() + theme_classic() + ggtitle("2010s") + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 
  library(gridExtra)
@@ -470,8 +478,8 @@ Fr <- ggplot(dfm, aes(x=variable, y=Season)) +  geom_tile(aes(fill=value), colou
 Fr
 ```
 
-```{r, fig.cap="Strength of relationship by season for assists, Rebounds and points"}
-dfm2 <- dplyr::filter(dfm, variable == "AST" | variable == "TRB" | variable == "STL" | variable == "PTS")
+```{r, fig.cap="Strength of relationship by season for assists, Rebounds and points for Frowards"}
+dfm2 <- dplyr::filter(dfm, variable == "AST" | variable == "TRB" | variable == "STL")
 
 ggplot(data=dfm2, aes(x=Season, y=abs(value), colour=variable)) +geom_point() + geom_smooth(method = "lm", aes(fill = variable)) + ylab("Strength of relationship") + theme_classic()
 ```
@@ -521,7 +529,9 @@ library(reshape2)
 Models <- Models[,-1]
 ```
 
-As we can see in figure 1, the `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[2])` is the variable that appears in most seasons being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[2]` of 37 seasons, followed by `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[3])` and `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[4])` being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[3]` and `r sort(colSums(!is.na(Models)), decreasing = TRUE)[4]` seasons respectively
+As we can see in figure 8, the `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[2])` per hundred possessions is the variable that appears in most seasons being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[2]` of 38 seasons, followed by `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[3])` per hundred possessions and `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[4])` per hundred possessions being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[3]` and `r sort(colSums(!is.na(Models)), decreasing = TRUE)[4]` seasons respectively.
+
+The most striking interdecadal change, is that Assists per hundred possessions, were the most selected variable through out the 80s and 90s, which falled to 4th most selected in the 2000s and 5th in the 2010s figure 7. Also, the importance of the variable has greatly decreased
 
 ```{r, fig.cap="Times a variable was selected by decade for Guards"}
 library(reshape2)
@@ -602,7 +612,7 @@ G
 ```{r, fig.cap="Strength of relationship by season for assists, Rebounds and points"}
 dfm2 <- dplyr::filter(dfm, variable == "AST" | variable == "TRB" | variable == "PTS")
 
-ggplot(data=dfm2, aes(x=Season, y=abs(value), colour=variable)) +geom_point() + geom_smooth( aes(fill = variable)) + ylab("Strength of relationship") + theme_classic()
+ggplot(data=dfm2, aes(x=Season, y=abs(value), colour=variable)) +geom_point() + geom_smooth( aes(fill = variable), method = "lm") + ylab("Strength of relationship") + theme_classic()
 ```
 
 #### Functionality
