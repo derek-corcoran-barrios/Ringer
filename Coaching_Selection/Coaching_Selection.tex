@@ -103,10 +103,12 @@ to?}
   With the creation of the three point shot, a shot made from behind the
   arc was worth more, which made long distance shooting more valuable. We
   explore which stats better explain the minutes per game played in every
-  season. Mostly we see that assist per 100 possessions and points per 100
-  possessions are the two stats have the most explanation for minutes per
-  game played. We notice that since 2009, rebounding per 100 possessions
-  stopped being an important variable selected by coaches
+  season, to see if coaches have adapted to these rules, all analyses were
+  made by possition (Guards, Frowards and Centers). Mostly we see that
+  assist per 100 possessions and points per 100 possessions are the two
+  stats have the most explanation for minutes per game played. We notice
+  that since 2009, rebounding per 100 possessions stopped being an
+  important variable selected by coaches
   \end{abstract}
   
  \end{frontmatter}
@@ -162,7 +164,7 @@ every possible first order model not allowing models to coexist if they
 had a Pearson correlation coefficient equal or higher than 0.7 (Dormann
 et al. 2013). Then the models were ranked based on Akaike's Information
 Criteria for small sample sizes (AICc) (Cavanaugh 1997) using the MuMin
-Package (Barto{ń} 2013; Burnham and Anderson 2002). We didn't use model
+Package (Bartoń 2013; Burnham and Anderson 2002). We didn't use model
 averaging since even though collinear variables were prohibited to
 coexist in the same model, these might coexist in the average model
 (Cade 2015), thus we selected the best possible model for each season
@@ -180,12 +182,18 @@ AST being selected in 19 and 12 seasons respectively
 \begin{figure}[htbp]
 \centering
 \includegraphics{Coaching_Selection_files/figure-latex/unnamed-chunk-6-1.pdf}
-\caption{Strength of relationship by season for Centers}
+\caption{Times a variable was selected by decade for Centers}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics{Coaching_Selection_files/figure-latex/unnamed-chunk-7-1.pdf}
+\caption{Strength of relationship by season for Centers}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{Coaching_Selection_files/figure-latex/unnamed-chunk-8-1.pdf}
 \caption{Strength of relationship by season for assists, Rebounds and
 points}
 \end{figure}
@@ -198,13 +206,19 @@ TwoPA being selected in 28 and 22 seasons respectively
 
 \begin{figure}[htbp]
 \centering
-\includegraphics{Coaching_Selection_files/figure-latex/unnamed-chunk-9-1.pdf}
+\includegraphics{Coaching_Selection_files/figure-latex/unnamed-chunk-10-1.pdf}
+\caption{Times a variable was selected by decade for Forwards}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{Coaching_Selection_files/figure-latex/unnamed-chunk-11-1.pdf}
 \caption{Strength of relationship by season for Forwards}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics{Coaching_Selection_files/figure-latex/unnamed-chunk-10-1.pdf}
+\includegraphics{Coaching_Selection_files/figure-latex/unnamed-chunk-12-1.pdf}
 \caption{Strength of relationship by season for assists, Rebounds and
 points}
 \end{figure}
@@ -217,13 +231,19 @@ being selected in 34 and 33 seasons respectively
 
 \begin{figure}[htbp]
 \centering
-\includegraphics{Coaching_Selection_files/figure-latex/unnamed-chunk-12-1.pdf}
+\includegraphics{Coaching_Selection_files/figure-latex/unnamed-chunk-14-1.pdf}
+\caption{Times a variable was selected by decade for Guards}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{Coaching_Selection_files/figure-latex/unnamed-chunk-15-1.pdf}
 \caption{Strength of relationship by season for Guards}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics{Coaching_Selection_files/figure-latex/unnamed-chunk-13-1.pdf}
+\includegraphics{Coaching_Selection_files/figure-latex/unnamed-chunk-16-1.pdf}
 \caption{Strength of relationship by season for assists, Rebounds and
 points}
 \end{figure}
@@ -274,47 +294,58 @@ Elsevier styles based on standard styles like Harvard and Vancouver.
 Please use BibTeX~to generate your bibliography and include DOIs
 whenever available.
 
-Here are two sample references: Barto{ń} (2013; Cade 2015).
+Here are two sample references: Bartoń (2013; Cade 2015).
 
 \section*{References}\label{references}
 \addcontentsline{toc}{section}{References}
 
-Barto{ń}, Kamil. 2013. ``MuMIn: Multi-Model Inference. R Package Version
+\hypertarget{refs}{}
+\hypertarget{ref-barton2013mumin}{}
+Bartoń, Kamil. 2013. ``MuMIn: Multi-Model Inference. R Package Version
 1.9. 13.'' \emph{The Comprehensive R Archive Network (CRAN), Vienna,
 Austria}.
 
+\hypertarget{ref-bro2003centering}{}
 Bro, Rasmus, and Age K Smilde. 2003. ``Centering and Scaling in
 Component Analysis.'' \emph{Journal of Chemometrics} 17 (1). Wiley
 Online Library: 16--33.
 
+\hypertarget{ref-burnham2002information}{}
 Burnham, KP, and DR Anderson. 2002. ``Information and Likelihood Theory:
 A Basis for Model Selection and Inference.'' \emph{Model Selection and
 Multimodel Inference: A Practical Information-Theoretic Approach} 2.
 Springer-Verlag New York: 49--97.
 
+\hypertarget{ref-cade2015model}{}
 Cade, Brian S. 2015. ``Model Averaging and Muddled Multimodel
 Inferences.'' \emph{Ecology} 96 (9). Wiley Online Library: 2370--82.
 
+\hypertarget{ref-cavanaugh1997unifying}{}
 Cavanaugh, Joseph E. 1997. ``Unifying the Derivations for the Akaike and
 Corrected Akaike Information Criteria.'' \emph{Statistics \& Probability
 Letters} 33 (2). Elsevier: 201--8.
 
+\hypertarget{ref-dormann2013collinearity}{}
 Dormann, Carsten F, Jane Elith, Sven Bacher, Carsten Buchmann, Gudrun
-Carl, Gabriel Carr{é}, Jaime R Garc{í}a Marqu{é}z, et al. 2013.
+Carl, Gabriel Carré, Jaime R García Marquéz, et al. 2013.
 ``Collinearity: A Review of Methods to Deal with It and a Simulation
 Study Evaluating Their Performance.'' \emph{Ecography} 36 (1). Wiley
 Online Library: 27--46.
 
+\hypertarget{ref-kuhn2013applied}{}
 Kuhn, Max, and Kjell Johnson. 2013. \emph{Applied Predictive Modeling}.
 Vol. 26. Springer.
 
+\hypertarget{ref-nelder1972generalized}{}
 Nelder, John A, and R Jacob Baker. 1972. ``Generalized Linear Models.''
 \emph{Encyclopedia of Statistical Sciences}. Wiley Online Library.
 
+\hypertarget{ref-BR_2}{}
 ``Player Season Finder Basketball-Reference.com.'' 2017. Accessed
 February 27.
 \url{http://www.basketball-reference.com/play-index/psl_finder.cgi}.
 
+\hypertarget{ref-team2016r}{}
 Team, R Core. 2016. ``R: A Language and Environment for Statistical
 Computing. R Development Core Team, Vienna.''
 

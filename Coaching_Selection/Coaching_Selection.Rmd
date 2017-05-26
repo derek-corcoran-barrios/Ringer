@@ -14,7 +14,7 @@ address:
   - code: Another University
     address: Department, Street, City, State, Zip
 abstract: |
-  Since the NBA adopted the three point line in 1979 the league has had several key rule changes (eg hand checking rules, allowing zone defense) that have altered the value of different skill-sets players may have. With the creation of the three point shot, a shot made from behind the arc was worth more, which made long distance shooting more valuable. We explore which stats better explain the minutes per game played in every season. Mostly we see that assist per 100 possessions and points per 100 possessions are the two stats have the most explanation for minutes per game played. We notice that since 2009, rebounding per 100 possessions stopped being an important variable selected by coaches
+  Since the NBA adopted the three point line in 1979 the league has had several key rule changes (eg hand checking rules, allowing zone defense) that have altered the value of different skill-sets players may have. With the creation of the three point shot, a shot made from behind the arc was worth more, which made long distance shooting more valuable. We explore which stats better explain the minutes per game played in every season, to see if coaches have adapted to these rules, all analyses were made by possition (Guards, Frowards and Centers). Mostly we see that assist per 100 possessions and points per 100 possessions are the two stats have the most explanation for minutes per game played. We notice that since 2009, rebounding per 100 possessions stopped being an important variable selected by coaches
 
 
 bibliography: mybibfile.bib
@@ -222,6 +222,8 @@ library(ggplot2)
 library(MuMIn)
 library(caret)
 
+Centers_total <- readRDS("Centers_total.rds")
+
 Centers_total$ThreePpct[is.na(Centers_total$ThreePpct)] <- 0
 preprocov <- preProcess(Centers_total[,-c(1:9,33)])
 Centers_total[,-c(1:9,33)] <- predict(preprocov, Centers_total[,-c(1:9,33)])
@@ -262,14 +264,77 @@ Models <- Models[,-1]
 
 As we can see in figure 1, the `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[2])` is the variable that appears in most seasons being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[2]` of 37 seasons, followed by `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[3])` and `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[4])` being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[3]` and `r sort(colSums(!is.na(Models)), decreasing = TRUE)[4]` seasons respectively
 
-```{r, fig.cap="Strength of relationship by season for Centers"}
+```{r, fig.cap="Times a variable was selected by decade for Centers"}
 library(reshape2)
 library(ggplot2)
 library(MuMIn)
 library(caret)
 dfm <- melt(Models, id.vars="Season")
 dfm$sign <- ifelse(dfm$value > 0 , "+" , ifelse(dfm$value < 0, "-", ""))
+dfm$Season <- (as.numeric(gsub("\\-.*","",dfm$Season)) + 1)
 
+ Eighties <- dplyr::filter(dfm, Season >= 1980 & Season <= 1990)
+
+ 
+ Eighties <- Eighties[complete.cases(Eighties),]
+
+ 
+ Eighties <- within(Eighties, 
+                    variable <- factor(variable, 
+                                       levels=names(sort(table(variable), 
+                                                         decreasing=TRUE))))
+  
+ library(ggplot2)
+ 
+ Eighties <- ggplot(Eighties, aes(x = variable)) + geom_bar() + theme_classic()+ ggtitle("1980s")+ theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+ 
+ Nineties <- dplyr::filter(dfm, Season >= 1990 & Season <= 2000)
+ 
+ Nineties <- Nineties[complete.cases(Nineties),]
+ 
+ Nineties <- within(Nineties, 
+                    variable <- factor(variable, 
+                                       levels=names(sort(table(variable), 
+                                                         decreasing=TRUE))))
+ 
+ Nineties <- ggplot(Nineties, aes(x = variable)) + geom_bar() + theme_classic() + ggtitle("1990s") + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+ K2 <- dplyr::filter(dfm, Season >= 2000 & Season <= 2010)
+ 
+ K2 <- K2[complete.cases(K2),]
+ 
+ 
+ K2 <- within(K2, 
+                    variable <- factor(variable, 
+                                       levels=names(sort(table(variable), 
+                                                         decreasing=TRUE))))
+ 
+ K2 <- ggplot(K2, aes(x = variable)) + geom_bar() + theme_classic() + ggtitle("2000s")+ theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+ 
+ Tens <- dplyr::filter(dfm, Season >= 2010)
+ 
+ Tens <- Tens[complete.cases(Tens),]
+ 
+ Tens <- within(Tens, 
+              variable <- factor(variable, 
+                                 levels=names(sort(table(variable), 
+                                                   decreasing=TRUE))))
+ 
+ Tens <-ggplot(Tens, aes(x = variable)) + geom_bar() + theme_classic() + ggtitle("2010s")+ theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+
+ library(gridExtra)
+ 
+grid.arrange(Eighties, Nineties, K2, Tens) 
+```
+
+```{r, fig.cap="Strength of relationship by season for Centers"}
 
 C <- ggplot(dfm, aes(x=variable, y=Season)) +  geom_tile(aes(fill=value), colour = "black") + scale_fill_gradient2(low = "blue", high = 'red', name="Strength") + theme_classic() + theme(axis.text.x=element_text(angle=45, margin = margin(0.35, unit = "cm"),vjust =1))
 C
@@ -277,7 +342,6 @@ C
 
 ```{r, fig.cap="Strength of relationship by season for assists, Rebounds and points"}
 dfm2 <- dplyr::filter(dfm, variable == "AST" | variable == "TRB" | variable == "PTS" |  variable == "TwoPA")
-dfm2$Season <- (as.numeric(gsub("\\-.*","",dfm2$Season)) + 1)
 
 ggplot(data=dfm2, aes(x=Season, y=abs(value), colour=variable)) +geom_point() + geom_smooth(method = "lm", aes(fill = variable)) + ylab("Strength of relationship") + theme_classic()
 ```
@@ -329,22 +393,85 @@ Models <- Models[,-1]
 
 As we can see in figure 1, the `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[2])` is the variable that appears in most seasons being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[2]` of 37 seasons, followed by `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[3])` and `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[4])` being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[3]` and `r sort(colSums(!is.na(Models)), decreasing = TRUE)[4]` seasons respectively
 
-```{r, fig.cap="Strength of relationship by season for Forwards"}
+```{r, fig.cap="Times a variable was selected by decade for Forwards"}
 library(reshape2)
 library(ggplot2)
 library(MuMIn)
 library(caret)
 dfm <- melt(Models, id.vars="Season")
 dfm$sign <- ifelse(dfm$value > 0 , "+" , ifelse(dfm$value < 0, "-", ""))
+dfm$Season <- (as.numeric(gsub("\\-.*","",dfm$Season)) + 1)
+
+ Eighties <- dplyr::filter(dfm, Season >= 1980 & Season <= 1990)
+
+ 
+ Eighties <- Eighties[complete.cases(Eighties),]
+
+ 
+ Eighties <- within(Eighties, 
+                    variable <- factor(variable, 
+                                       levels=names(sort(table(variable), 
+                                                         decreasing=TRUE))))
+  
+ library(ggplot2)
+ 
+ Eighties <- ggplot(Eighties, aes(x = variable)) + geom_bar() + theme_classic()+ ggtitle("1980s") + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 
+ 
+ Nineties <- dplyr::filter(dfm, Season >= 1990 & Season <= 2000)
+ 
+ Nineties <- Nineties[complete.cases(Nineties),]
+ 
+ Nineties <- within(Nineties, 
+                    variable <- factor(variable, 
+                                       levels=names(sort(table(variable), 
+                                                         decreasing=TRUE))))
+ 
+ Nineties <- ggplot(Nineties, aes(x = variable)) + geom_bar() + theme_classic() + ggtitle("1990s") + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+ K2 <- dplyr::filter(dfm, Season >= 2000 & Season <= 2010)
+ 
+ K2 <- K2[complete.cases(K2),]
+ 
+ 
+ K2 <- within(K2, 
+                    variable <- factor(variable, 
+                                       levels=names(sort(table(variable), 
+                                                         decreasing=TRUE))))
+ 
+ K2 <- ggplot(K2, aes(x = variable)) + geom_bar() + theme_classic() + ggtitle("2000s")+ theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+ 
+ Tens <- dplyr::filter(dfm, Season >= 2010)
+ 
+ Tens <- Tens[complete.cases(Tens),]
+ 
+ Tens <- within(Tens, 
+              variable <- factor(variable, 
+                                 levels=names(sort(table(variable), 
+                                                   decreasing=TRUE))))
+ 
+ Tens <-ggplot(Tens, aes(x = variable)) + geom_bar() + theme_classic() + ggtitle("2010s")
++ theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+ library(gridExtra)
+ 
+grid.arrange(Eighties, Nineties, K2, Tens) 
+
+```
+
+
+```{r, fig.cap="Strength of relationship by season for Forwards"}
 Fr <- ggplot(dfm, aes(x=variable, y=Season)) +  geom_tile(aes(fill=value), colour = "black") + scale_fill_gradient2(low = "blue", high = 'red', name="Strength") + theme_classic() + theme(axis.text.x=element_text(angle=45, margin = margin(0.35, unit = "cm"),vjust =1))
 Fr
 ```
 
 ```{r, fig.cap="Strength of relationship by season for assists, Rebounds and points"}
 dfm2 <- dplyr::filter(dfm, variable == "AST" | variable == "TRB" | variable == "STL" | variable == "PTS")
-dfm2$Season <- (as.numeric(gsub("\\-.*","",dfm2$Season)) + 1)
 
 ggplot(data=dfm2, aes(x=Season, y=abs(value), colour=variable)) +geom_point() + geom_smooth(method = "lm", aes(fill = variable)) + ylab("Strength of relationship") + theme_classic()
 ```
@@ -396,24 +523,86 @@ Models <- Models[,-1]
 
 As we can see in figure 1, the `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[2])` is the variable that appears in most seasons being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[2]` of 37 seasons, followed by `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[3])` and `r names(sort(colSums(!is.na(Models)), decreasing = TRUE)[4])` being selected in `r sort(colSums(!is.na(Models)), decreasing = TRUE)[3]` and `r sort(colSums(!is.na(Models)), decreasing = TRUE)[4]` seasons respectively
 
-```{r, fig.cap="Strength of relationship by season for Guards"}
+```{r, fig.cap="Times a variable was selected by decade for Guards"}
 library(reshape2)
 library(ggplot2)
 library(MuMIn)
 library(caret)
 dfm <- melt(Models, id.vars="Season")
 dfm$sign <- ifelse(dfm$value > 0 , "+" , ifelse(dfm$value < 0, "-", ""))
+dfm$Season <- (as.numeric(gsub("\\-.*","",dfm$Season)) + 1)
 
 
+ Eighties <- dplyr::filter(dfm, Season >= 1980 & Season <= 1990)
+
+ 
+ Eighties <- Eighties[complete.cases(Eighties),]
+
+ 
+ Eighties <- within(Eighties, 
+                    variable <- factor(variable, 
+                                       levels=names(sort(table(variable), 
+                                                         decreasing=TRUE))))
+  
+ library(ggplot2)
+ 
+ Eighties <- ggplot(Eighties, aes(x = variable)) + geom_bar() + theme_classic()+ ggtitle("1980s") + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+ 
+ Nineties <- dplyr::filter(dfm, Season >= 1990 & Season <= 2000)
+ 
+ Nineties <- Nineties[complete.cases(Nineties),]
+ 
+ Nineties <- within(Nineties, 
+                    variable <- factor(variable, 
+                                       levels=names(sort(table(variable), 
+                                                         decreasing=TRUE))))
+ 
+ Nineties <- ggplot(Nineties, aes(x = variable)) + geom_bar() + theme_classic() + ggtitle("1990s") + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+ K2 <- dplyr::filter(dfm, Season >= 2000 & Season <= 2010)
+ 
+ K2 <- K2[complete.cases(K2),]
+ 
+ 
+ K2 <- within(K2, 
+                    variable <- factor(variable, 
+                                       levels=names(sort(table(variable), 
+                                                         decreasing=TRUE))))
+ 
+ K2 <- ggplot(K2, aes(x = variable)) + geom_bar() + theme_classic() + ggtitle("2000s") + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+ 
+ Tens <- dplyr::filter(dfm, Season >= 2010)
+ 
+ Tens <- Tens[complete.cases(Tens),]
+ 
+ Tens <- within(Tens, 
+              variable <- factor(variable, 
+                                 levels=names(sort(table(variable), 
+                                                   decreasing=TRUE))))
+ 
+ Tens <-ggplot(Tens, aes(x = variable)) + geom_bar() + theme_classic() + ggtitle("2010s") + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+
+ library(gridExtra)
+ 
+grid.arrange(Eighties, Nineties, K2, Tens) 
+```
+
+```{r, fig.cap="Strength of relationship by season for Guards"}
 G <- ggplot(dfm, aes(x=variable, y=Season)) +  geom_tile(aes(fill=value), colour = "black") + scale_fill_gradient2(low = "blue", high = 'red', name="Strength") + theme_classic() + theme(axis.text.x=element_text(angle=45, margin = margin(0.35, unit = "cm"),vjust =1))
 G
 ```
 
 ```{r, fig.cap="Strength of relationship by season for assists, Rebounds and points"}
 dfm2 <- dplyr::filter(dfm, variable == "AST" | variable == "TRB" | variable == "PTS")
-dfm2$Season <- (as.numeric(gsub("\\-.*","",dfm2$Season)) + 1)
 
-ggplot(data=dfm2, aes(x=Season, y=abs(value), colour=variable)) +geom_point() + geom_smooth(method = "lm", aes(fill = variable)) + ylab("Strength of relationship") + theme_classic()
+ggplot(data=dfm2, aes(x=Season, y=abs(value), colour=variable)) +geom_point() + geom_smooth( aes(fill = variable)) + ylab("Strength of relationship") + theme_classic()
 ```
 
 #### Functionality
